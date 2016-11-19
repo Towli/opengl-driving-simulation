@@ -1,9 +1,4 @@
-//OPENGL 3.2 DEMO FOR RENDERING OBJECTS LOADED FROM OBJ FILES
-
-//includes areas for keyboard control, mouse control, resizing the window
-//and draws a spinning rectangle
-
-#include <windows.h>		// Header File For Windows
+#include <windows.h>
 #include "gl/glew.h"
 #include "gl/wglew.h"
 #pragma comment(lib, "glew32.lib")
@@ -24,28 +19,30 @@ ConsoleWindow console;
 Shader* myShader;  ///shader object 
 Shader* myBasicShader;
 
-//MODEL LOADING
+// MODEL LOADING
 #include "3DStruct\threeDModel.h"
 #include "Obj\OBJLoader.h"
 
 float amount = 0;
 float temp = 0.002f;
 	
-
 ThreeDModel model, modelbox;
 OBJLoader objLoader;
 ///END MODEL LOADING
 
+// MATRICES
 glm::mat4 ProjectionMatrix; // matrix for the orthographic projection
 glm::mat4 ModelViewMatrix;  // matrix for the modelling and viewing
 
-//Material properties
+// GAME OBJECTS
+
+// MATERIAL PROPERTIES
 float Material_Ambient[4] = {0.1f, 0.1f, 0.1f, 1.0f};
 float Material_Diffuse[4] = {0.8f, 0.8f, 0.5f, 1.0f};
 float Material_Specular[4] = {0.9f,0.9f,0.8f,1.0f};
 float Material_Shininess = 50;
 
-//Light Properties
+//LIGHT PROPERTIES
 float Light_Ambient_And_Diffuse[4] = {0.8f, 0.8f, 0.6f, 1.0f};
 float Light_Specular[4] = {1.0f,1.0f,1.0f,1.0f};
 float LightPos[4] = {0.0f, 0.0f, 1.0f, 0.0f};
@@ -58,6 +55,8 @@ bool keys[256];
 float spin=180;
 float speed=0;
 
+//DELTA-TIME
+
 //OPENGL FUNCTION PROTOTYPES
 void display();				//called in winmain to draw everything to the screen
 void reshape(int width, int height);				//called when the window is resized
@@ -67,6 +66,54 @@ void update();				//called in winmain to update variables
 void updateTransform(float xinc, float yinc, float zinc);
 
 /*************    START OF OPENGL FUNCTIONS   ****************/
+void init()
+{
+	glClearColor(1.0, 1.0, 1.0, 0.0);	//sets the clear colour to yellow
+	glEnable(GL_DEPTH_TEST);
+
+	//shader for normal models
+	myShader = new Shader;
+
+	if (!myShader->load("BasicView", "glslfiles/basicTransformations.vert", "glslfiles/basicTransformations.frag"))
+	{
+		cout << "failed to load shader" << endl;
+	}
+
+	myBasicShader = new Shader;
+
+	if (!myBasicShader->load("Basic", "glslfiles/basic.vert", "glslfiles/basic.frag"))
+	{
+		cout << "failed to load shader" << endl;
+	}
+
+	glUseProgram(myShader->handle());  // use the shader
+
+	glEnable(GL_TEXTURE_2D);
+
+	if (objLoader.loadModel("TestModels/box.obj", modelbox))//returns true if the model is loaded, puts the model in the model parameter
+	{
+		cout << " model loaded " << endl;
+
+		//if you want to translate the object to the origin of the screen,
+		//first calculate the centre of the object, then move all the vertices
+		//back so that the centre is on the origin.
+		modelbox.calcCentrePoint();
+		modelbox.centreOnZero();
+
+		modelbox.calcVertNormalsUsingOctree();  //the method will construct the octree if it hasn't already been created.
+
+		//turn on VBO by setting useVBO to true in threeDmodel.cpp default constructor - only permitted on 8 series cards and higher
+		modelbox.initDrawElements();
+		modelbox.initVBO(myShader);
+		modelbox.deleteVertexFaceData();
+
+	}
+	else
+	{
+		cout << " model failed to load " << endl;
+	}
+}
+
 void display()									
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -119,7 +166,7 @@ void display()
 	
 	glUseProgram(myShader->handle());  // use the shader
 
-	ModelViewMatrix = glm::translate(viewingMatrix, glm::vec3(20,0,0));
+	ModelViewMatrix = glm::translate(viewingMatrix, glm::vec3(0,0,0));
 
 	normalMatrix = glm::inverseTranspose(glm::mat3(ModelViewMatrix));
 	glUniformMatrix3fv(glGetUniformLocation(myShader->handle(), "NormalMatrix"), 1, GL_FALSE, &normalMatrix[0][0]);
@@ -140,57 +187,6 @@ void reshape(int width, int height)		// Resize the OpenGL window
 
 	//Set the projection matrix
 	ProjectionMatrix = glm::perspective(60.0f, (GLfloat)screenWidth/(GLfloat)screenHeight, 1.0f, 200.0f);
-}
-void init()
-{
-	glClearColor(1.0,1.0,1.0,0.0);						//sets the clear colour to yellow
-														//glClear(GL_COLOR_BUFFER_BIT) in the display function
-														//will clear the buffer to this colour
-	glEnable(GL_DEPTH_TEST);
-
-	myShader = new Shader;
-	//if(!myShader->load("BasicView", "glslfiles/basicTransformationsWithDisplacement.vert", "glslfiles/basicTransformationsWithDisplacement.frag"))
-    if(!myShader->load("BasicView", "glslfiles/basicTransformations.vert", "glslfiles/basicTransformations.frag"))
-	{
-		cout << "failed to load shader" << endl;
-	}		
-
-	myBasicShader = new Shader;
-	if(!myBasicShader->load("Basic", "glslfiles/basic.vert", "glslfiles/basic.frag"))
-	{
-		cout << "failed to load shader" << endl;
-	}		
-
-	glUseProgram(myShader->handle());  // use the shader
-
-	glEnable(GL_TEXTURE_2D);
-
-	if(objLoader.loadModel("TestModels/box.obj", modelbox))//returns true if the model is loaded, puts the model in the model parameter
-	{
-		cout << " model loaded " << endl;		
-
-		//if you want to translate the object to the origin of the screen,
-		//first calculate the centre of the object, then move all the vertices
-		//back so that the centre is on the origin.
-		modelbox.calcCentrePoint();
-		modelbox.centreOnZero();
-
-	
-		modelbox.calcVertNormalsUsingOctree();  //the method will construct the octree if it hasn't already been created.
-				
-
-		//turn on VBO by setting useVBO to true in threeDmodel.cpp default constructor - only permitted on 8 series cards and higher
-		modelbox.initDrawElements();
-		modelbox.initVBO(myShader);
-		modelbox.deleteVertexFaceData();
-		
-	}
-	else
-	{
-		cout << " model failed to load " << endl;
-	}
-
-	
 }
 void processKeys()
 {
