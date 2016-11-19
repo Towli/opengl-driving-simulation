@@ -35,6 +35,7 @@ glm::mat4 ProjectionMatrix; // matrix for the orthographic projection
 glm::mat4 ModelViewMatrix;  // matrix for the modelling and viewing
 
 // GAME OBJECTS
+float carX, carY, carZ;
 
 // MATERIAL PROPERTIES
 float Material_Ambient[4] = {0.1f, 0.1f, 0.1f, 1.0f};
@@ -166,7 +167,7 @@ void display()
 	
 	glUseProgram(myShader->handle());  // use the shader
 
-	ModelViewMatrix = glm::translate(viewingMatrix, glm::vec3(0,0,0));
+	ModelViewMatrix = glm::translate(viewingMatrix, glm::vec3(carX,carY,carZ));
 
 	normalMatrix = glm::inverseTranspose(glm::mat3(ModelViewMatrix));
 	glUniformMatrix3fv(glGetUniformLocation(myShader->handle(), "NormalMatrix"), 1, GL_FALSE, &normalMatrix[0][0]);
@@ -190,51 +191,50 @@ void reshape(int width, int height)		// Resize the OpenGL window
 }
 void processKeys()
 {
-	float spinXinc=0, spinYinc=0, spinZinc=0;
 	if(keys[VK_UP])
 	{
-		spinXinc= 0.5f;
+		carZ += -0.5f;
 	}
 	if(keys[VK_DOWN])
 	{
-		spinXinc= -0.5f;
+		carZ += 0.5f;
 	}
 	if(keys[VK_LEFT])
 	{
-		spinYinc = 0.5f;
+		carX += -0.5f;
 	}
 	if(keys[VK_RIGHT])
 	{
-		spinYinc = -0.5f;
+		carX += 0.5f;
 	}
 	if(keys[VK_SPACE])
 	{
-		spinZinc = 0.5f;
+		carY += -0.5f;
 	}
 	if(keys[VK_SHIFT])
 	{
-		spinZinc = -0.5f;
+		carY += 0.5f;
 	}
-	updateTransform(spinXinc, spinYinc, spinZinc);
+	//updateTransform(spinXinc, spinYinc, spinZinc);
 }
 void updateTransform(float xinc, float yinc, float zinc)
 {
 	glm::mat4 matrixX, matrixXY;
-	
+
 	//rotation about the local x axis
-	q = glm::angleAxis(xinc, glm::vec3(objectRotation[0][0], objectRotation[0][1], objectRotation[0][2])); 
-	matrixX = glm::mat4_cast(q) * objectRotation;
+	//q = glm::angleAxis(xinc, glm::vec3(objectRotation[0][0], objectRotation[0][1], objectRotation[0][2])); 
+	//matrixX = glm::mat4_cast(q) * objectRotation;
 
 	//EXAMPLE FOR ACCESSING USING A 1D array
-	const float *pSource = (const float*)glm::value_ptr(matrixX);
+	//const float *pSource = (const float*)glm::value_ptr(matrixX);
 	//rotation about the local y axis
-	q = glm::angleAxis(yinc, glm::vec3(pSource[4], pSource[5], pSource[6])); 
-	matrixXY = glm::mat4_cast(q) * matrixX;
+	//q = glm::angleAxis(yinc, glm::vec3(pSource[4], pSource[5], pSource[6])); 
+	//matrixXY = glm::mat4_cast(q) * matrixX;
 	
 	//EXAMPLE ACCESSING WITH 2D GLM structure.
 	//rotation about the local z axis
-	q = glm::angleAxis(zinc, glm::vec3(matrixXY[2][0], matrixXY[2][1], matrixXY[2][2])); 
-	objectRotation = glm::mat4_cast(q) * matrixXY;
+	//q = glm::angleAxis(zinc, glm::vec3(matrixXY[2][0], matrixXY[2][1], matrixXY[2][2])); 
+	//objectRotation = glm::mat4_cast(q) * matrixXY;
 }
 void update()
 {
