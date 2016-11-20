@@ -84,6 +84,9 @@
     <ClCompile Include="Box.cpp">
       <Filter>Header Files\Box</Filter>
     </ClCompile>
+    <ClCompile Include="Car.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="console.h">
@@ -130,6 +133,9 @@
     </ClInclude>
     <ClInclude Include="Box.h">
       <Filter>Header Files\Box</Filter>
+    </ClInclude>
+    <ClInclude Include="Car.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

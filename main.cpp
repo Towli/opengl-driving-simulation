@@ -11,6 +11,7 @@
 #include "glm\gtc\matrix_transform.hpp"
 #include "glm\gtc\type_ptr.hpp"
 #include "glm\gtc\matrix_inverse.hpp"
+#include "glm/ext.hpp"
 
 glm::mat4 objectRotation;
 glm::quat q;
@@ -18,6 +19,10 @@ glm::quat q;
 ConsoleWindow console;
 Shader* myShader;  ///shader object 
 Shader* myBasicShader;
+
+// BOX FOR TESTING
+#include "Box.h"
+Box box;
 
 // MODEL LOADING
 #include "3DStruct\threeDModel.h"
@@ -113,6 +118,11 @@ void init()
 	{
 		cout << " model failed to load " << endl;
 	}
+
+	// Box for movement dev
+	box = Box();
+	box.constructGeometry(myShader, -2.0f, -2.0f, -2.0f, 2.0f, 2.0f, 2.0f);
+
 }
 
 void display()									
@@ -155,26 +165,23 @@ void display()
 	glm::mat3 normalMatrix = glm::inverseTranspose(glm::mat3(ModelViewMatrix));
 	glUniformMatrix3fv(glGetUniformLocation(myShader->handle(), "NormalMatrix"), 1, GL_FALSE, &normalMatrix[0][0]);
 	
-	model.drawElementsUsingVBO(myShader);
-	
-	
 	glUseProgram(myBasicShader->handle());  // use the shader
 	glUniformMatrix4fv(glGetUniformLocation(myBasicShader->handle(), "ProjectionMatrix"), 1, GL_FALSE, &ProjectionMatrix[0][0]);
 	glUniformMatrix4fv(glGetUniformLocation(myBasicShader->handle(), "ModelViewMatrix"), 1, GL_FALSE, &ModelViewMatrix[0][0]);
 	
-	//model.drawBoundingBox(myBasicShader);
-	//model.drawOctreeLeaves(myBasicShader);
-	
 	glUseProgram(myShader->handle());  // use the shader
 
-	ModelViewMatrix = glm::translate(viewingMatrix, glm::vec3(carX,carY,carZ));
+	ModelViewMatrix = glm::translate(viewingMatrix, glm::vec3(box.getPosition()));
+	ModelViewMatrix = glm::rotate(ModelViewMatrix, box.getDirection(), glm::vec3(0.0, 1.0, 0.0));
 
 	normalMatrix = glm::inverseTranspose(glm::mat3(ModelViewMatrix));
 	glUniformMatrix3fv(glGetUniformLocation(myShader->handle(), "NormalMatrix"), 1, GL_FALSE, &normalMatrix[0][0]);
 	
 	//Pass the uniform for the modelview matrix - in this case just "r"
 	glUniformMatrix4fv(glGetUniformLocation(myShader->handle(), "ModelViewMatrix"), 1, GL_FALSE, &ModelViewMatrix[0][0]);
-	modelbox.drawElementsUsingVBO(myShader);
+	//modelbox.drawElementsUsingVBO(myShader);
+	box.render();
+
 	
 	glFlush();
 }
@@ -191,56 +198,42 @@ void reshape(int width, int height)		// Resize the OpenGL window
 }
 void processKeys()
 {
-	if(keys[VK_UP])
+	if (keys['W'])
 	{
-		carZ += -0.5f;
+		if (box.getSpeed() < 10.0) {
+			box.setSpeed(box.getSpeed() + 0.1);
+		}
+		else {
+			box.setSpeed(10.0);
+		}
 	}
-	if(keys[VK_DOWN])
-	{
-		carZ += 0.5f;
-	}
-	if(keys[VK_LEFT])
-	{
-		carX += -0.5f;
-	}
-	if(keys[VK_RIGHT])
-	{
-		carX += 0.5f;
-	}
-	if(keys[VK_SPACE])
-	{
-		carY += -0.5f;
-	}
-	if(keys[VK_SHIFT])
-	{
-		carY += 0.5f;
-	}
-	//updateTransform(spinXinc, spinYinc, spinZinc);
-}
-void updateTransform(float xinc, float yinc, float zinc)
-{
-	glm::mat4 matrixX, matrixXY;
 
-	//rotation about the local x axis
-	//q = glm::angleAxis(xinc, glm::vec3(objectRotation[0][0], objectRotation[0][1], objectRotation[0][2])); 
-	//matrixX = glm::mat4_cast(q) * objectRotation;
-
-	//EXAMPLE FOR ACCESSING USING A 1D array
-	//const float *pSource = (const float*)glm::value_ptr(matrixX);
-	//rotation about the local y axis
-	//q = glm::angleAxis(yinc, glm::vec3(pSource[4], pSource[5], pSource[6])); 
-	//matrixXY = glm::mat4_cast(q) * matrixX;
+	if (keys['A'])
+	{
+		box.turn(1);
+	}
 	
-	//EXAMPLE ACCESSING WITH 2D GLM structure.
-	//rotation about the local z axis
-	//q = glm::angleAxis(zinc, glm::vec3(matrixXY[2][0], matrixXY[2][1], matrixXY[2][2])); 
-	//objectRotation = glm::mat4_cast(q) * matrixXY;
+	if (keys['S'])
+	{
+		if (box.getSpeed() > -10.0) {
+			box.setSpeed(box.getSpeed() - 0.1);
+		}
+		else {
+			box.setSpeed(-10.0);
+		}
+	}
+	
+	if (keys['D'])
+	{
+		box.turn(-1);
+	}
+
+	//---------------------------
 }
+
 void update()
 {
-	spin += speed;
-	if(spin > 360)
-		spin = 0;
+	box.move();
 }
 /**************** END OPENGL FUNCTIONS *************************/
 

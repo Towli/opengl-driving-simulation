@@ -1,12 +1,18 @@
 #include "Box.h"
 #include "shaders\Shader.h"
+#include <iostream>
+#include "glm/ext.hpp"
 
+const double PI = 3.1415926535897;
 int Box::numOfTris = 12;
 int Box::numOfVerts = 8;
 
 Box::Box()
 {
 	dim = 1.0;
+	speed = 0.0;
+	turnSpeed = 0.07;
+	currentAngle = 0.0;
 }
 
 void Box::render()
@@ -94,4 +100,45 @@ void Box::constructGeometry(Shader* myShader, float minx, float miny, float minz
 	glEnableVertexAttribArray(0);
 
 	glBindVertexArray(0);
+}
+
+void Box::move()
+{
+	speed *= 0.8;
+	//x += sin(getDirection()) * this->speed;
+	//z += sin(getDirection()) * this->speed;
+	std::cout << getDirection() << std::endl;
+	std::cout << "Speed = " << speed << std::endl;
+
+	position.x += glm::sin(glm::radians((getDirection()))) * speed;
+	position.z += glm::cos(glm::radians((getDirection()))) * speed;
+}
+
+void Box::turn(int direction)
+{
+	currentAngle += turnSpeed * direction;
+}
+
+void Box::setSpeed(float newSpeed)
+{
+	speed = newSpeed;
+}
+
+float Box::getSpeed()
+{
+	return speed;
+}
+
+glm::vec3 Box::getPosition()
+{
+	return position;
+}
+
+void Box::setPosition(float x, float y, float z)
+{
+	position = glm::vec3(x,y,z);
+}
+
+float Box::getDirection() {
+	return currentAngle / PI * 180;
 }
