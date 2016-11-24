@@ -105,11 +105,6 @@ void Box::constructGeometry(Shader* myShader, float minx, float miny, float minz
 void Box::move()
 {
 	speed *= 0.8;
-	//x += sin(getDirection()) * this->speed;
-	//z += sin(getDirection()) * this->speed;
-	std::cout << getDirection() << std::endl;
-	std::cout << "Speed = " << speed << std::endl;
-
 	position.x += glm::sin(glm::radians((getDirection()))) * speed;
 	position.z += glm::cos(glm::radians((getDirection()))) * speed;
 }
