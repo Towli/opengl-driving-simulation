@@ -3,7 +3,6 @@
 #include "gl/wglew.h"
 #pragma comment(lib, "glew32.lib")
 
-#include "console.h"
 #include "shaders/Shader.h"   // include shader header file, this is not part of OpenGL
 
 
@@ -15,7 +14,6 @@
 glm::mat4 objectRotation;
 glm::quat q;
 
-ConsoleWindow console;
 Shader* myShader;  ///shader object 
 Shader* myBasicShader;
 
@@ -266,8 +264,9 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 	MSG		msg;									// Windows Message Structure
 	bool	done=false;								// Bool Variable To Exit Loop
 
-	console.Open();
-
+	AllocConsole();
+	freopen("CONOUT$", "w", stdout);
+	freopen("CONOUT$", "w", stderr);
 
 	// Create Our OpenGL Window
 	if (!CreateGLWindow("OpenGL Win32 Example",screenWidth,screenHeight))
@@ -301,8 +300,6 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 			SwapBuffers(hDC);				// Swap Buffers (Double Buffering)
 		}
 	}
-
-	console.Close();
 
 	// Shutdown
 	KillGLWindow();									// Kill The Window
