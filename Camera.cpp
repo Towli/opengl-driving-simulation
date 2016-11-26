@@ -3,10 +3,9 @@
 	Camera::Camera(GameObject* targetObject)
 	{
 		this->targetObject = targetObject;
-		//float targetAngle = targetObject->getDirection();
-		//offset = glm::vec3(glm::cos(10*glm::radians(targetAngle)), 5.0f, 10*glm::sin(glm::radians(targetAngle)));
-		offset = glm::vec3(10.f, 6.0f, 10.f);
-		position = targetObject->getPosition() + offset;
+		float targetAngle = targetObject->getDirection();
+		offset = glm::vec3(glm::sin(10*glm::radians(targetAngle)), -5.0f, 10*glm::cos(glm::radians(targetAngle)));
+		position = targetObject->getPosition() - offset;
 		lookAt = targetObject->getPosition();
 		up = glm::vec3(0.0f, 1.0f, 0.0f);
 
@@ -20,10 +19,9 @@
 
 	void Camera::update()
 	{
-		//float targetAngle = targetObject->getDirection();
-		//offset = glm::vec3(10*glm::cos(glm::radians(targetAngle)), 5.0f, 10*glm::sin(glm::radians(targetAngle)));
-		offset = glm::vec3(10.f, 6.0f, 10.f);
-		position = targetObject->getPosition() + offset;
+		float targetAngle = targetObject->getDirection();
+		offset = glm::vec3(10*glm::sin(glm::radians(targetAngle)),-5.0f, 10*glm::cos(glm::radians(targetAngle)));
+		position = targetObject->getPosition() - offset;
 		lookAt = targetObject->getPosition();
 		viewingMatrix = glm::lookAt(position, lookAt, up);
 	}
