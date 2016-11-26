@@ -4,7 +4,7 @@
 int Box::numOfTris = 12;
 int Box::numOfVerts = 8;
 
-Box::Box()
+Box::Box() : GameObject()
 {
 	dim = 1.0;
 }
@@ -13,16 +13,11 @@ void Box::render()
 {
 	//draw objects
 	glBindVertexArray(m_vaoID);		// select VAO
-
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-	glDrawElements(GL_TRIANGLES, numOfTris*3, GL_UNSIGNED_INT, 0);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-			
-	// Done
-	
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+		glDrawElements(GL_TRIANGLES, numOfTris*3, GL_UNSIGNED_INT, 0);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glBindVertexArray(0); //unbind the vertex array object
-	
 }
 
 void Box::constructGeometry(Shader* myShader, float minx, float miny, float minz, float maxx, float maxy, float maxz)
@@ -95,3 +90,4 @@ void Box::constructGeometry(Shader* myShader, float minx, float miny, float minz
 
 	glBindVertexArray(0);
 }
+

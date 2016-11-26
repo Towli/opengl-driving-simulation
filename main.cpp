@@ -28,12 +28,13 @@ ThreeDModel model, modelbox;
 OBJLoader objLoader;
 ///END MODEL LOADING
 
+// BOX FOR TESTING
+#include "Box.h";
+Box box;
+
 // MATRICES
 glm::mat4 ProjectionMatrix; // matrix for the orthographic projection
 glm::mat4 ModelViewMatrix;  // matrix for the modelling and viewing
-
-// GAME OBJECTS
-float carX, carY, carZ;
 
 // MATERIAL PROPERTIES
 float Material_Ambient[4] = {0.1f, 0.1f, 0.1f, 1.0f};
@@ -55,6 +56,7 @@ float spin=180;
 float speed=0;
 
 //DELTA-TIME
+//....
 
 //OPENGL FUNCTION PROTOTYPES
 void display();				//called in winmain to draw everything to the screen
@@ -62,7 +64,6 @@ void reshape(int width, int height);				//called when the window is resized
 void init();				//called in winmain when the program starts.
 void processKeys();         //called in winmain to process keyboard input
 void update();				//called in winmain to update variables
-void updateTransform(float xinc, float yinc, float zinc);
 
 /*************    START OF OPENGL FUNCTIONS   ****************/
 void init()
@@ -89,7 +90,7 @@ void init()
 
 	glEnable(GL_TEXTURE_2D);
 
-	if (objLoader.loadModel("TestModels/box.obj", modelbox))//returns true if the model is loaded, puts the model in the model parameter
+	/*if (objLoader.loadModel("TestModels/box.obj", modelbox))//returns true if the model is loaded, puts the model in the model parameter
 	{
 		cout << " model loaded " << endl;
 
@@ -110,15 +111,15 @@ void init()
 	else
 	{
 		cout << " model failed to load " << endl;
-	}
+	}*/
+
+	box.constructGeometry(myShader, -2.0f, -2.0f, -2.0f, 2.0f, 2.0f, 2.0f);	//change these parameters to use dim instead
 }
 
 void display()									
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
 	glMatrixMode(GL_MODELVIEW);
-
 	glUseProgram(myShader->handle());  // use the shader
 
 	amount += temp;
@@ -149,31 +150,26 @@ void display()
 	
 	glUniformMatrix4fv(glGetUniformLocation(myShader->handle(), "ModelViewMatrix"), 1, GL_FALSE, &ModelViewMatrix[0][0]);
 
-	
 	glm::mat3 normalMatrix = glm::inverseTranspose(glm::mat3(ModelViewMatrix));
 	glUniformMatrix3fv(glGetUniformLocation(myShader->handle(), "NormalMatrix"), 1, GL_FALSE, &normalMatrix[0][0]);
-	
-	model.drawElementsUsingVBO(myShader);
-	
 	
 	glUseProgram(myBasicShader->handle());  // use the shader
 	glUniformMatrix4fv(glGetUniformLocation(myBasicShader->handle(), "ProjectionMatrix"), 1, GL_FALSE, &ProjectionMatrix[0][0]);
 	glUniformMatrix4fv(glGetUniformLocation(myBasicShader->handle(), "ModelViewMatrix"), 1, GL_FALSE, &ModelViewMatrix[0][0]);
 	
-	//model.drawBoundingBox(myBasicShader);
-	//model.drawOctreeLeaves(myBasicShader);
-	
 	glUseProgram(myShader->handle());  // use the shader
 
-	ModelViewMatrix = glm::translate(viewingMatrix, glm::vec3(carX,carY,carZ));
+	ModelViewMatrix = glm::translate(viewingMatrix, glm::vec3(box.getPosition()));
+	ModelViewMatrix = glm::rotate(ModelViewMatrix, box.getDirection(), glm::vec3(0.0, 1.0, 0.0));
 
 	normalMatrix = glm::inverseTranspose(glm::mat3(ModelViewMatrix));
 	glUniformMatrix3fv(glGetUniformLocation(myShader->handle(), "NormalMatrix"), 1, GL_FALSE, &normalMatrix[0][0]);
 	
 	//Pass the uniform for the modelview matrix - in this case just "r"
 	glUniformMatrix4fv(glGetUniformLocation(myShader->handle(), "ModelViewMatrix"), 1, GL_FALSE, &ModelViewMatrix[0][0]);
-	modelbox.drawElementsUsingVBO(myShader);
-	
+	//modelbox.drawElementsUsingVBO(myShader);
+	box.render();
+
 	glFlush();
 }
 
@@ -189,56 +185,40 @@ void reshape(int width, int height)		// Resize the OpenGL window
 }
 void processKeys()
 {
-	if(keys[VK_UP])
+	if (keys['W'])
 	{
-		carZ += -0.5f;
+		if (box.getSpeed() < 10.0) {
+			box.setSpeed(box.getSpeed() + 0.1);
+		}
+		else {
+			box.setSpeed(10.0);
+		}
 	}
-	if(keys[VK_DOWN])
-	{
-		carZ += 0.5f;
-	}
-	if(keys[VK_LEFT])
-	{
-		carX += -0.5f;
-	}
-	if(keys[VK_RIGHT])
-	{
-		carX += 0.5f;
-	}
-	if(keys[VK_SPACE])
-	{
-		carY += -0.5f;
-	}
-	if(keys[VK_SHIFT])
-	{
-		carY += 0.5f;
-	}
-	//updateTransform(spinXinc, spinYinc, spinZinc);
-}
-void updateTransform(float xinc, float yinc, float zinc)
-{
-	glm::mat4 matrixX, matrixXY;
 
-	//rotation about the local x axis
-	//q = glm::angleAxis(xinc, glm::vec3(objectRotation[0][0], objectRotation[0][1], objectRotation[0][2])); 
-	//matrixX = glm::mat4_cast(q) * objectRotation;
+	if (keys['A'])
+	{
+		box.turn(1);
+	}
 
-	//EXAMPLE FOR ACCESSING USING A 1D array
-	//const float *pSource = (const float*)glm::value_ptr(matrixX);
-	//rotation about the local y axis
-	//q = glm::angleAxis(yinc, glm::vec3(pSource[4], pSource[5], pSource[6])); 
-	//matrixXY = glm::mat4_cast(q) * matrixX;
-	
-	//EXAMPLE ACCESSING WITH 2D GLM structure.
-	//rotation about the local z axis
-	//q = glm::angleAxis(zinc, glm::vec3(matrixXY[2][0], matrixXY[2][1], matrixXY[2][2])); 
-	//objectRotation = glm::mat4_cast(q) * matrixXY;
+	if (keys['S'])
+	{
+		if (box.getSpeed() > -10.0) {
+			box.setSpeed(box.getSpeed() - 0.1);
+		}
+		else {
+			box.setSpeed(-10.0);
+		}
+	}
+
+	if (keys['D'])
+	{
+		box.turn(-1);
+	}
 }
+
 void update()
 {
-	spin += speed;
-	if(spin > 360)
-		spin = 0;
+	box.move();
 }
 /**************** END OPENGL FUNCTIONS *************************/
 

@@ -8,6 +8,7 @@
 class GameObject
 {
 private:
+	const double PI = 3.1415926535897;
 	ThreeDModel model;
 	Shader* shader;
 	glm::vec3 position;
@@ -23,8 +24,15 @@ public:
 	/* Rendering */
 	void draw();
 
-	/* Positioning */
+	/* Position & direction handling*/
 	glm::vec3 getPosition();
 	void setPosition(glm::vec3 position);
+	void turn(int direction);
+	float getDirection();
+
+	/* Movement */
+	void move();
+	void setSpeed(float speed);
+	float getSpeed();
 };
 

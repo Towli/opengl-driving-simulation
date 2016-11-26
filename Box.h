@@ -2,6 +2,7 @@
 #define _BOX_H
 
 #include "gl\glew.h"
+#include "GameObject.h"
 
 class Shader;
 
@@ -9,7 +10,7 @@ const int NumberOfVertexCoords = 24;
 const int NumberOfTriangleIndices = 36;
 
 
-class Box
+class Box : public GameObject
 {
 private:
 	float dim;
