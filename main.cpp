@@ -30,7 +30,7 @@ OBJLoader objLoader;
 
 // BOX FOR TESTING
 #include "Box.h";
-Box box;
+Box box, ground;
 
 // MATRICES
 glm::mat4 ProjectionMatrix; // matrix for the orthographic projection
@@ -113,7 +113,8 @@ void init()
 		cout << " model failed to load " << endl;
 	}*/
 
-	box.constructGeometry(myShader, -2.0f, -2.0f, -2.0f, 2.0f, 2.0f, 2.0f);	//change these parameters to use dim instead
+	box.constructGeometry(myShader, -2.0f, -2.0f, -2.0f, 2.0f, 2.0f, 2.0f);	//change these parameters to use dim instead 
+	ground.constructGeometry(myShader, -50.0f, -2.0f, -50.0f, 50.0f, 2.0f, 50.0f);
 }
 
 void display()									
@@ -122,16 +123,16 @@ void display()
 	glMatrixMode(GL_MODELVIEW);
 	glUseProgram(myShader->handle());  // use the shader
 
-	amount += temp;
-	if(amount > 1.0f || amount < -0.5f)
-		temp = -temp;
-	//amount = 0;
-	glUniform1f(glGetUniformLocation(myShader->handle(), "displacement"), amount);
-
 	GLuint matLocation = glGetUniformLocation(myShader->handle(), "ProjectionMatrix");  
 	glUniformMatrix4fv(matLocation, 1, GL_FALSE, &ProjectionMatrix[0][0]);
 
-	glm::mat4 viewingMatrix = glm::translate(glm::mat4(1.0),glm::vec3(0,0,-50));
+	//glm::mat4 viewingMatrix = glm::translate(glm::mat4(1.0),glm::vec3(0,0,-50));
+	glm::mat4 viewingMatrix;
+	glm::vec3 boxPosition = box.getPosition();
+	glm::vec3 camPosition = glm::vec3(boxPosition.x - 10.0, boxPosition.y + 12.5, boxPosition.z - 10.0);
+	viewingMatrix = glm::lookAt(camPosition,
+								box.getPosition(),
+								glm::vec3(0.0f, 1.0f, 0.0f));
 	glUniformMatrix4fv(glGetUniformLocation(myShader->handle(), "ViewMatrix"), 1, GL_FALSE, &viewingMatrix[0][0]);
 
 	glUniform4fv(glGetUniformLocation(myShader->handle(), "LightPos"), 1, LightPos);
@@ -168,7 +169,15 @@ void display()
 	//Pass the uniform for the modelview matrix - in this case just "r"
 	glUniformMatrix4fv(glGetUniformLocation(myShader->handle(), "ModelViewMatrix"), 1, GL_FALSE, &ModelViewMatrix[0][0]);
 	//modelbox.drawElementsUsingVBO(myShader);
+
 	box.render();
+
+	ModelViewMatrix = glm::translate(viewingMatrix, glm::vec3(0.0, -2.0, 0.0));
+	normalMatrix = glm::inverseTranspose(glm::mat3(ModelViewMatrix));
+	glUniformMatrix3fv(glGetUniformLocation(myShader->handle(), "NormalMatrix"), 1, GL_FALSE, &normalMatrix[0][0]);
+	//Pass the uniform for the modelview matrix - in this case just "r"
+	glUniformMatrix4fv(glGetUniformLocation(myShader->handle(), "ModelViewMatrix"), 1, GL_FALSE, &ModelViewMatrix[0][0]);
+	ground.render();
 
 	glFlush();
 }
