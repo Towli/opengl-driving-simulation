@@ -34,7 +34,7 @@ Box box, ground;
 
 // CAMERA
 #include "Camera.h"
-Camera staticCam;
+Camera camera;
 
 // MATRICES
 glm::mat4 ProjectionMatrix; // matrix for the orthographic projection
@@ -121,7 +121,7 @@ void init()
 	ground.constructGeometry(myShader, -50.0f, -2.0f, -50.0f, 50.0f, 2.0f, 50.0f);
 
 	// Static camera to follow a Box object
-	staticCam = Camera(&box);
+	camera = Camera(&box, Type::THIRD);
 }
 
 void display()									
@@ -133,11 +133,10 @@ void display()
 	GLuint matLocation = glGetUniformLocation(myShader->handle(), "ProjectionMatrix");  
 	glUniformMatrix4fv(matLocation, 1, GL_FALSE, &ProjectionMatrix[0][0]);
 
-	//glm::mat4 viewingMatrix = glm::translate(glm::mat4(1.0),glm::vec3(0,0,-50));
 	glm::mat4 viewingMatrix;
 	glm::vec3 boxPosition = box.getPosition();
 	// Get the camera's viewing matrix
-	viewingMatrix = staticCam.getViewingMatrix();
+	viewingMatrix = camera.getViewingMatrix();
 	glUniformMatrix4fv(glGetUniformLocation(myShader->handle(), "ViewMatrix"), 1, GL_FALSE, &viewingMatrix[0][0]);
 
 	glUniform4fv(glGetUniformLocation(myShader->handle(), "LightPos"), 1, LightPos);
@@ -228,12 +227,27 @@ void processKeys()
 	{
 		box.turn(-1);
 	}
+
+	if (keys['1'])
+	{
+		camera.setType(Type::FIRST);
+	}
+
+	if (keys['2'])
+	{
+		camera.setType(Type::THIRD);
+	}
+
+	if (keys['3'])
+	{
+		camera.setType(Type::STATIC);
+	}
 }
 
 void update()
 {
 	box.move();
-	staticCam.update();
+	camera.update();
 }
 /**************** END OPENGL FUNCTIONS *************************/
 

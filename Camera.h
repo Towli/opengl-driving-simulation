@@ -3,6 +3,8 @@
 #include "glm\gtc\matrix_transform.hpp"
 #include "GameObject.h"
 
+enum class Type { FIRST = 1, THIRD = 2, STATIC = 3 };
+
 class Camera
 {
 private:
@@ -12,14 +14,20 @@ private:
 	glm::vec3 position;
 	glm::vec3 lookAt;
 	glm::vec3 up;
+	Type type;
 
 public:
-	Camera(GameObject* targetObject);
+	Camera(GameObject* targetObject, Type type);
 	Camera();
 	~Camera();
 
 	void update();
 	void follow();
+
+	// Update views to for respective camera types
+	void updateFPSView();
+	void updateTPSView();
+	void updateStaticView();
 
 	// Getter & Setter for Viewing Matrix
 	glm::mat4 getViewingMatrix();
@@ -29,8 +37,10 @@ public:
 	glm::vec3 getPosition();
 	glm::vec3 getLookAt();
 	glm::vec3 getUp();
+	Type getType();
 	void setPosition(glm::vec3 position);
 	void setLookAt(glm::vec3 lookAt);
 	void setUp(glm::vec3 up);
+	void setType(Type type);
 };
 
