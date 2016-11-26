@@ -1,26 +1,20 @@
 	#include "Camera.h"
 
-	Camera::Camera(GameObject* targetObject)
-	{
-		this->targetObject = targetObject;
-		float targetAngle = targetObject->getDirection();
-		offset = glm::vec3(glm::sin(10*glm::radians(targetAngle)), -5.0f, 10*glm::cos(glm::radians(targetAngle)));
-		position = targetObject->getPosition() - offset;
-		lookAt = targetObject->getPosition();
-		up = glm::vec3(0.0f, 1.0f, 0.0f);
-
-		// Set the viewing matrix
-		viewingMatrix = glm::lookAt(position, lookAt, up);
-	}
-
 	Camera::Camera(){}
 
 	Camera::~Camera(){}
 
+	Camera::Camera(GameObject* targetObject)
+	{
+		this->targetObject = targetObject;
+		up = glm::vec3(0.0f, 1.0f, 0.0f);
+		update();
+	}
+
 	void Camera::update()
 	{
-		float targetAngle = targetObject->getDirection();
-		offset = glm::vec3(10*glm::sin(glm::radians(targetAngle)),-5.0f, 10*glm::cos(glm::radians(targetAngle)));
+		float direction = targetObject->getDirection();
+		offset = glm::vec3(10*glm::sin(glm::radians(direction)),-5.0f, 10*glm::cos(glm::radians(direction)));
 		position = targetObject->getPosition() - offset;
 		lookAt = targetObject->getPosition();
 		viewingMatrix = glm::lookAt(position, lookAt, up);
