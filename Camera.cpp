@@ -35,7 +35,6 @@
 	void Camera::updateFPSView()
 	{
 		float direction = targetObject->getDirection();
-		//offset = glm::vec3(glm::sin(glm::radians(direction)), -2.0f, glm::cos(glm::radians(direction)));
 		position = targetObject->getPosition();
 		lookAt = position + glm::vec3(glm::sin(glm::radians(direction)), 0.0f, glm::cos(glm::radians(direction)));
 	}

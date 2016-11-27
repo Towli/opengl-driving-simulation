@@ -118,7 +118,7 @@ void init()
 	}*/
 
 	box.constructGeometry(myShader, -2.0f, -2.0f, -2.0f, 2.0f, 2.0f, 2.0f);	//change these parameters to use dim instead 
-	ground.constructGeometry(myShader, -50.0f, -2.0f, -50.0f, 50.0f, 2.0f, 50.0f);
+	ground.constructGeometry(myShader, -100.0f, -1.0f, -100.0f, 100.0f, 1.0f, 100.0f);
 
 	// Static camera to follow a Box object
 	camera = Camera(&box, Type::THIRD);
