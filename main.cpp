@@ -46,15 +46,15 @@ glm::mat4 ProjectionMatrix; // matrix for the orthographic projection
 glm::mat4 ModelViewMatrix;  // matrix for the modelling and viewing
 
 // MATERIAL PROPERTIES
-float Material_Ambient[4] = {0.1f, 0.1f, 0.1f, 1.0f};
+float Material_Ambient[4] = { 0.4f, 0.4f, 0.4f, 1.0f };
 float Material_Diffuse[4] = {0.8f, 0.8f, 0.5f, 1.0f};
 float Material_Specular[4] = {0.9f,0.9f,0.8f,1.0f};
 float Material_Shininess = 50;
 
 //LIGHT PROPERTIES
-float Light_Ambient_And_Diffuse[4] = {0.8f, 0.8f, 0.6f, 1.0f};
+float Light_Ambient_And_Diffuse[4] = {0.8f, 0.8f, 0.8f, 1.0f};
 float Light_Specular[4] = {1.0f,1.0f,1.0f,1.0f};
-float LightPos[4] = {0.0f, 0.0f, 1.0f, 0.0f};
+float LightPos[4] = {0.0f, 15.0f, 0.0f, 0.0f};
 
 //
 int	mouse_x=0, mouse_y=0;
@@ -124,7 +124,6 @@ void init()
 
 	ground = GameObject(myShader, &cityBlocks);
 	box.constructGeometry(myShader, -2.0f, -2.0f, -2.0f, 2.0f, 2.0f, 2.0f);	//change these parameters to use dim instead 
-	//ground.constructGeometry(myShader, -100.0f, -1.0f, -100.0f, 100.0f, 1.0f, 100.0f);
 
 	// Initialise a third-person camera to follow a Box object
 	camera = Camera(&box, Type::THIRD);
@@ -183,7 +182,7 @@ void display()
 	box.render();
 
 	ModelViewMatrix = glm::translate(viewingMatrix, glm::vec3(0.0, -2.0, 0.0));
-	ModelViewMatrix = glm::rotate(ModelViewMatrix, 90.0f, glm::vec3(1.0, 0.0, 0.0));
+	//ModelViewMatrix = glm::rotate(ModelViewMatrix, 90.0f, glm::vec3(1.0, 0.0, 0.0));
 	normalMatrix = glm::inverseTranspose(glm::mat3(ModelViewMatrix));
 	glUniformMatrix3fv(glGetUniformLocation(myShader->handle(), "NormalMatrix"), 1, GL_FALSE, &normalMatrix[0][0]);
 	//Pass the uniform for the modelview matrix - in this case just "r"
@@ -208,11 +207,11 @@ void processKeys()
 {
 	if (keys['W'])
 	{
-		if (box.getSpeed() < 10.0) {
-			box.setSpeed(box.getSpeed() + 0.1);
+		if (box.getSpeed() < 1.0) {
+			box.setSpeed(box.getSpeed() + 0.01);
 		}
 		else {
-			box.setSpeed(10.0);
+			box.setSpeed(1.0);
 		}
 	}
 
@@ -223,11 +222,11 @@ void processKeys()
 
 	if (keys['S'])
 	{
-		if (box.getSpeed() > -10.0) {
-			box.setSpeed(box.getSpeed() - 0.1);
+		if (box.getSpeed() > -1.0) {
+			box.setSpeed(box.getSpeed() - 0.01);
 		}
 		else {
-			box.setSpeed(-10.0);
+			box.setSpeed(-1.0);
 		}
 	}
 
