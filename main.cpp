@@ -23,14 +23,19 @@ Shader* myBasicShader;
 
 float amount = 0;
 float temp = 0.002f;
-	
+
+// GAME OBJECTS
+#include "GameObject.h"
+GameObject ground;
 ThreeDModel model, modelbox;
+ThreeDModel cityBlocks;
 OBJLoader objLoader;
 ///END MODEL LOADING
 
 // BOX FOR TESTING
 #include "Box.h";
-Box box, ground;
+Box box;
+//Box ground;
 
 // CAMERA
 #include "Camera.h"
@@ -94,33 +99,34 @@ void init()
 
 	glEnable(GL_TEXTURE_2D);
 
-	/*if (objLoader.loadModel("TestModels/box.obj", modelbox))//returns true if the model is loaded, puts the model in the model parameter
+	if (objLoader.loadModel("Models/CityBlocksRoads/city_roads.obj", cityBlocks)) //returns true if the model is loaded, puts the model in the model parameter
 	{
-		cout << " model loaded " << endl;
-
+		cout << " Model: 'city_roads' loaded. " << endl;
+		
 		//if you want to translate the object to the origin of the screen,
 		//first calculate the centre of the object, then move all the vertices
 		//back so that the centre is on the origin.
-		modelbox.calcCentrePoint();
-		modelbox.centreOnZero();
+		cityBlocks.calcCentrePoint();
+		cityBlocks.centreOnZero();
 
-		modelbox.calcVertNormalsUsingOctree();  //the method will construct the octree if it hasn't already been created.
+		cityBlocks.calcVertNormalsUsingOctree();  //the method will construct the octree if it hasn't already been created.
 
 		//turn on VBO by setting useVBO to true in threeDmodel.cpp default constructor - only permitted on 8 series cards and higher
-		modelbox.initDrawElements();
-		modelbox.initVBO(myShader);
-		modelbox.deleteVertexFaceData();
+		cityBlocks.initDrawElements();
+		cityBlocks.initVBO(myShader);
+		cityBlocks.deleteVertexFaceData();
 
 	}
 	else
 	{
 		cout << " model failed to load " << endl;
-	}*/
+	}
 
+	ground = GameObject(myShader, &cityBlocks);
 	box.constructGeometry(myShader, -2.0f, -2.0f, -2.0f, 2.0f, 2.0f, 2.0f);	//change these parameters to use dim instead 
-	ground.constructGeometry(myShader, -100.0f, -1.0f, -100.0f, 100.0f, 1.0f, 100.0f);
+	//ground.constructGeometry(myShader, -100.0f, -1.0f, -100.0f, 100.0f, 1.0f, 100.0f);
 
-	// Static camera to follow a Box object
+	// Initialise a third-person camera to follow a Box object
 	camera = Camera(&box, Type::THIRD);
 }
 
@@ -177,11 +183,13 @@ void display()
 	box.render();
 
 	ModelViewMatrix = glm::translate(viewingMatrix, glm::vec3(0.0, -2.0, 0.0));
+	ModelViewMatrix = glm::rotate(ModelViewMatrix, 90.0f, glm::vec3(1.0, 0.0, 0.0));
 	normalMatrix = glm::inverseTranspose(glm::mat3(ModelViewMatrix));
 	glUniformMatrix3fv(glGetUniformLocation(myShader->handle(), "NormalMatrix"), 1, GL_FALSE, &normalMatrix[0][0]);
 	//Pass the uniform for the modelview matrix - in this case just "r"
 	glUniformMatrix4fv(glGetUniformLocation(myShader->handle(), "ModelViewMatrix"), 1, GL_FALSE, &ModelViewMatrix[0][0]);
-	ground.render();
+	//ground.render();
+	ground.getModel()->drawElementsUsingVBO(myShader);
 
 	glFlush();
 }

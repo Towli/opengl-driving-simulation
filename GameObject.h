@@ -5,11 +5,13 @@
 #include "glm\glm.hpp"
 #include <math.h>
 
+#define PI 3.1415926535897
+
+
 class GameObject
 {
 private:
-	const double PI = 3.1415926535897;
-	ThreeDModel model;
+	ThreeDModel* model;
 	Shader* shader;
 	glm::vec3 position;
 	float currentAngle;
@@ -17,12 +19,15 @@ private:
 	float speed;
 
 public:
-	GameObject(Shader* shader, ThreeDModel model);
+	GameObject(Shader* shader, ThreeDModel* model);
 	GameObject();
 	~GameObject();
 
 	/* Rendering */
 	void draw();
+
+	/* ThreeDModel */
+	ThreeDModel* getModel();
 
 	/* Position & direction handling*/
 	glm::vec3 getPosition();

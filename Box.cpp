@@ -13,7 +13,7 @@ void Box::render()
 {
 	//draw objects
 	glBindVertexArray(m_vaoID);		// select VAO
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_TRIANGLES);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 		glDrawElements(GL_TRIANGLES, numOfTris*3, GL_UNSIGNED_INT, 0);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
