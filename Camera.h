@@ -23,6 +23,7 @@ public:
 
 	void update();
 	void follow();
+	glm::vec2 getDistance(GameObject* targetObject);
 
 	// Update views to for respective camera types
 	void updateFPSView();

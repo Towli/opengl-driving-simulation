@@ -1,4 +1,5 @@
 	#include "Camera.h"
+#include "glm/ext.hpp"
 
 	Camera::Camera(){}
 
@@ -9,6 +10,7 @@
 		this->type = type;
 		this->targetObject = targetObject;
 		up = glm::vec3(0.0f, 1.0f, 0.0f);
+		position = glm::vec3(0.0f, 20.0f, 0.0f);
 		update();
 	}
 
@@ -47,9 +49,22 @@
 		lookAt = targetObject->getPosition();
 	}
 
-	void Camera::updateStaticView(){
-		position = glm::vec3(0.0f, 20.0f, 0.0f);
-		lookAt = targetObject->getPosition();
+	void Camera::updateStaticView()
+	{
+		position.y = 20.0f;
+		glm::vec2 distance = getDistance(targetObject);
+		std::cout << glm::to_string(targetObject->getPosition()) << std::endl;
+		if (distance.x > 100 || distance.y > 100 || distance.x < -100 || distance.y < -100) {
+			position = glm::vec3(targetObject->getPosition().x, 20.0f, targetObject->getPosition().z);
+		}
+		lookAt = targetObject->getPosition() + glm::vec3(0.0f, 1.0f, 5.0f);	// adding this vector is a hacky fix to prevent linker error!
+	}
+
+	glm::vec2 Camera::getDistance(GameObject* targetObject) {
+		float targetX = targetObject->getPosition().x;
+		float targetZ = targetObject->getPosition().z;
+		
+		return glm::vec2(position.x - targetX, position.z - targetZ);
 	}
 
 	void Camera::setPosition(glm::vec3 position)
