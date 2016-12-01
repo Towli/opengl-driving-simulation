@@ -27,15 +27,17 @@ float temp = 0.002f;
 // GAME OBJECTS
 #include "GameObject.h"
 GameObject ground;
+GameObject car;
+
 ThreeDModel model, modelbox;
 ThreeDModel cityBlocks;
+ThreeDModel mitsubishi;
 OBJLoader objLoader;
 ///END MODEL LOADING
 
 // BOX FOR TESTING
 #include "Box.h";
 Box box;
-//Box ground;
 
 // CAMERA
 #include "Camera.h"
@@ -52,7 +54,7 @@ float Material_Specular[4] = {0.9f,0.9f,0.8f,1.0f};
 float Material_Shininess = 50;
 
 //LIGHT PROPERTIES
-float Light_Ambient_And_Diffuse[4] = {0.8f, 0.8f, 0.8f, 1.0f};
+float Light_Ambient_And_Diffuse[4] = {0.8f, 0.8f, 0.9f, 1.0f};
 float Light_Specular[4] = {1.0f,1.0f,1.0f,1.0f};
 float LightPos[4] = {0.0f, 15.0f, 0.0f, 0.0f};
 
@@ -101,7 +103,7 @@ void init()
 
 	if (objLoader.loadModel("Models/CityBlocksRoads/city_roads.obj", cityBlocks)) //returns true if the model is loaded, puts the model in the model parameter
 	{
-		cout << " Model: 'city_roads' loaded. " << endl;
+		cout << " Model: 'city_roads.obj' loaded. " << endl;
 		
 		//if you want to translate the object to the origin of the screen,
 		//first calculate the centre of the object, then move all the vertices
@@ -122,6 +124,30 @@ void init()
 		cout << " model failed to load " << endl;
 	}
 
+	if (objLoader.loadModel("Models/mitsubishi_eclipse/mitsubishi_eclipse.obj", mitsubishi)) //returns true if the model is loaded, puts the model in the model parameter
+	{
+		cout << " Model: 'mitsubishi_eclipse.obj' loaded. " << endl;
+
+		//if you want to translate the object to the origin of the screen,
+		//first calculate the centre of the object, then move all the vertices
+		//back so that the centre is on the origin.
+		mitsubishi.calcCentrePoint();
+		mitsubishi.centreOnZero();
+
+		mitsubishi.calcVertNormalsUsingOctree();  //the method will construct the octree if it hasn't already been created.
+
+		//turn on VBO by setting useVBO to true in threeDmodel.cpp default constructor - only permitted on 8 series cards and higher
+		mitsubishi.initDrawElements();
+		mitsubishi.initVBO(myShader);
+		mitsubishi.deleteVertexFaceData();
+
+	}
+	else
+	{
+		cout << " model failed to load " << endl;
+	}
+
+	car = GameObject(myShader, &mitsubishi);
 	ground = GameObject(myShader, &cityBlocks);
 	box.constructGeometry(myShader, -2.0f, -2.0f, -2.0f, 2.0f, 2.0f, 2.0f);	//change these parameters to use dim instead 
 
@@ -170,16 +196,22 @@ void display()
 	glUseProgram(myShader->handle());  // use the shader
 
 	ModelViewMatrix = glm::translate(viewingMatrix, glm::vec3(box.getPosition()));
-	ModelViewMatrix = glm::rotate(ModelViewMatrix, box.getDirection(), glm::vec3(0.0, 1.0, 0.0));
+	ModelViewMatrix = glm::rotate(ModelViewMatrix, box.getDirection(), glm::vec3(0.0f, 1.0f, 0.0f));
+
+	// Car transformations
+	ModelViewMatrix = glm::translate(ModelViewMatrix, glm::vec3(0.0f, 2.0f, 0.0f));
+	ModelViewMatrix = glm::rotate(ModelViewMatrix, 180.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+	ModelViewMatrix = glm::rotate(ModelViewMatrix, 90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+	ModelViewMatrix = glm::scale(ModelViewMatrix, glm::vec3(0.4f, 0.4f, 0.4f));
 
 	normalMatrix = glm::inverseTranspose(glm::mat3(ModelViewMatrix));
 	glUniformMatrix3fv(glGetUniformLocation(myShader->handle(), "NormalMatrix"), 1, GL_FALSE, &normalMatrix[0][0]);
 	
 	//Pass the uniform for the modelview matrix - in this case just "r"
 	glUniformMatrix4fv(glGetUniformLocation(myShader->handle(), "ModelViewMatrix"), 1, GL_FALSE, &ModelViewMatrix[0][0]);
-	//modelbox.drawElementsUsingVBO(myShader);
 
 	box.render();
+	car.getModel()->drawElementsUsingVBO(myShader);
 
 	ModelViewMatrix = glm::translate(viewingMatrix, glm::vec3(0.0, -2.0, 0.0));
 	//ModelViewMatrix = glm::rotate(ModelViewMatrix, 90.0f, glm::vec3(1.0, 0.0, 0.0));
@@ -187,7 +219,7 @@ void display()
 	glUniformMatrix3fv(glGetUniformLocation(myShader->handle(), "NormalMatrix"), 1, GL_FALSE, &normalMatrix[0][0]);
 	//Pass the uniform for the modelview matrix - in this case just "r"
 	glUniformMatrix4fv(glGetUniformLocation(myShader->handle(), "ModelViewMatrix"), 1, GL_FALSE, &ModelViewMatrix[0][0]);
-	//ground.render();
+
 	ground.getModel()->drawElementsUsingVBO(myShader);
 
 	glFlush();
@@ -208,7 +240,7 @@ void processKeys()
 	if (keys['W'])
 	{
 		if (box.getSpeed() < 1.0) {
-			box.setSpeed(box.getSpeed() + 0.01);
+			box.setSpeed(box.getSpeed() + 0.5);
 		}
 		else {
 			box.setSpeed(1.0);
@@ -223,7 +255,7 @@ void processKeys()
 	if (keys['S'])
 	{
 		if (box.getSpeed() > -1.0) {
-			box.setSpeed(box.getSpeed() - 0.01);
+			box.setSpeed(box.getSpeed() - 0.5);
 		}
 		else {
 			box.setSpeed(-1.0);

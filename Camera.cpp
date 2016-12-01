@@ -37,14 +37,14 @@
 	void Camera::updateFPSView()
 	{
 		float direction = targetObject->getDirection();
-		position = targetObject->getPosition();
+		position = targetObject->getPosition() + glm::vec3(0.0f, 6.0f, 0.0f);
 		lookAt = position + glm::vec3(glm::sin(glm::radians(direction)), 0.0f, glm::cos(glm::radians(direction)));
 	}
 
 	void Camera::updateTPSView()
 	{
 		float direction = targetObject->getDirection();
-		offset = glm::vec3(10 * glm::sin(glm::radians(direction)), -5.0f, 10 * glm::cos(glm::radians(direction)));
+		offset = glm::vec3(25 * glm::sin(glm::radians(direction)), -12.5f, 25 * glm::cos(glm::radians(direction)));
 		position = targetObject->getPosition() - offset;
 		lookAt = targetObject->getPosition();
 	}
@@ -53,7 +53,6 @@
 	{
 		position.y = 20.0f;
 		glm::vec2 distance = getDistance(targetObject);
-		std::cout << glm::to_string(targetObject->getPosition()) << std::endl;
 		if (distance.x > 100 || distance.y > 100 || distance.x < -100 || distance.y < -100) {
 			position = glm::vec3(targetObject->getPosition().x, 20.0f, targetObject->getPosition().z);
 		}
