@@ -29,15 +29,10 @@ float temp = 0.002f;
 GameObject ground;
 GameObject car;
 
-ThreeDModel model, modelbox;
+// MODEL LOADING
 ThreeDModel cityBlocks;
 ThreeDModel mitsubishi;
 OBJLoader objLoader;
-///END MODEL LOADING
-
-// BOX FOR TESTING
-#include "Box.h";
-Box box;
 
 // CAMERA
 #include "Camera.h"
@@ -147,12 +142,12 @@ void init()
 		cout << " model failed to load " << endl;
 	}
 
+	// Initialise GameObjects
 	car = GameObject(myShader, &mitsubishi);
 	ground = GameObject(myShader, &cityBlocks);
-	box.constructGeometry(myShader, -2.0f, -2.0f, -2.0f, 2.0f, 2.0f, 2.0f);	//change these parameters to use dim instead 
 
 	// Initialise a third-person camera to follow a Box object
-	camera = Camera(&box, Type::THIRD);
+	camera = Camera(&car, Type::THIRD);
 }
 
 void display()									
@@ -165,7 +160,7 @@ void display()
 	glUniformMatrix4fv(matLocation, 1, GL_FALSE, &ProjectionMatrix[0][0]);
 
 	glm::mat4 viewingMatrix;
-	glm::vec3 boxPosition = box.getPosition();
+	glm::vec3 carPosition = car.getPosition();
 	// Get the camera's viewing matrix
 	viewingMatrix = camera.getViewingMatrix();
 	glUniformMatrix4fv(glGetUniformLocation(myShader->handle(), "ViewMatrix"), 1, GL_FALSE, &viewingMatrix[0][0]);
@@ -182,7 +177,7 @@ void display()
 
 
 	//DRAW THE MODEL
-	ModelViewMatrix = viewingMatrix * objectRotation;
+	ModelViewMatrix = viewingMatrix;
 	
 	glUniformMatrix4fv(glGetUniformLocation(myShader->handle(), "ModelViewMatrix"), 1, GL_FALSE, &ModelViewMatrix[0][0]);
 
@@ -195,8 +190,8 @@ void display()
 	
 	glUseProgram(myShader->handle());  // use the shader
 
-	ModelViewMatrix = glm::translate(viewingMatrix, glm::vec3(box.getPosition()));
-	ModelViewMatrix = glm::rotate(ModelViewMatrix, box.getDirection(), glm::vec3(0.0f, 1.0f, 0.0f));
+	ModelViewMatrix = glm::translate(viewingMatrix, glm::vec3(carPosition));
+	ModelViewMatrix = glm::rotate(ModelViewMatrix, car.getDirection(), glm::vec3(0.0f, 1.0f, 0.0f));
 
 	// Car transformations
 	ModelViewMatrix = glm::translate(ModelViewMatrix, glm::vec3(0.0f, 2.0f, 0.0f));
@@ -210,11 +205,9 @@ void display()
 	//Pass the uniform for the modelview matrix - in this case just "r"
 	glUniformMatrix4fv(glGetUniformLocation(myShader->handle(), "ModelViewMatrix"), 1, GL_FALSE, &ModelViewMatrix[0][0]);
 
-	box.render();
 	car.getModel()->drawElementsUsingVBO(myShader);
 
 	ModelViewMatrix = glm::translate(viewingMatrix, glm::vec3(0.0, -2.0, 0.0));
-	//ModelViewMatrix = glm::rotate(ModelViewMatrix, 90.0f, glm::vec3(1.0, 0.0, 0.0));
 	normalMatrix = glm::inverseTranspose(glm::mat3(ModelViewMatrix));
 	glUniformMatrix3fv(glGetUniformLocation(myShader->handle(), "NormalMatrix"), 1, GL_FALSE, &normalMatrix[0][0]);
 	//Pass the uniform for the modelview matrix - in this case just "r"
@@ -239,32 +232,32 @@ void processKeys()
 {
 	if (keys['W'])
 	{
-		if (box.getSpeed() < 1.0) {
-			box.setSpeed(box.getSpeed() + 0.5);
+		if (car.getSpeed() < 1.0) {
+			car.setSpeed(car.getSpeed() + 0.5);
 		}
 		else {
-			box.setSpeed(1.0);
+			car.setSpeed(1.0);
 		}
 	}
 
 	if (keys['A'])
 	{
-		box.turn(1);
+		car.turn(1);
 	}
 
 	if (keys['S'])
 	{
-		if (box.getSpeed() > -1.0) {
-			box.setSpeed(box.getSpeed() - 0.5);
+		if (car.getSpeed() > -1.0) {
+			car.setSpeed(car.getSpeed() - 0.5);
 		}
 		else {
-			box.setSpeed(-1.0);
+			car.setSpeed(-1.0);
 		}
 	}
 
 	if (keys['D'])
 	{
-		box.turn(-1);
+		car.turn(-1);
 	}
 
 	if (keys['1'])
@@ -285,7 +278,7 @@ void processKeys()
 
 void update()
 {
-	box.move();
+	car.move();
 	camera.update();
 }
 /**************** END OPENGL FUNCTIONS *************************/
