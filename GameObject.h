@@ -36,7 +36,7 @@ public:
 	float getDirection();
 
 	/* Movement */
-	void move();
+	void move(double deltaTime);
 	void setSpeed(float speed);
 	float getSpeed();
 };

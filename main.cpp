@@ -62,14 +62,20 @@ float spin=180;
 float speed=0;
 
 //DELTA-TIME
-//....
+#include <time.h>
+clock_t t;
+double currentTime = clock();
+double previousTime = 0.0;
+double deltaTime = 0.0;
+
 
 //OPENGL FUNCTION PROTOTYPES
 void display();				//called in winmain to draw everything to the screen
 void reshape(int width, int height);				//called when the window is resized
 void init();				//called in winmain when the program starts.
 void processKeys();         //called in winmain to process keyboard input
-void update();				//called in winmain to update variables
+void update(double deltaTime);				//called in winmain to update variables
+void calculateDeltaTime();
 
 /*************    START OF OPENGL FUNCTIONS   ****************/
 void init()
@@ -233,7 +239,7 @@ void processKeys()
 	if (keys['W'])
 	{
 		if (car.getSpeed() < 1.0) {
-			car.setSpeed(car.getSpeed() + 0.5);
+			car.setSpeed(car.getSpeed() + 0.01);
 		}
 		else {
 			car.setSpeed(1.0);
@@ -248,7 +254,7 @@ void processKeys()
 	if (keys['S'])
 	{
 		if (car.getSpeed() > -1.0) {
-			car.setSpeed(car.getSpeed() - 0.5);
+			car.setSpeed(car.getSpeed() - 0.01);
 		}
 		else {
 			car.setSpeed(-1.0);
@@ -276,9 +282,19 @@ void processKeys()
 	}
 }
 
-void update()
+void calculateDeltaTime() 
 {
-	car.move();
+	std::cout << currentTime << std::endl;
+	previousTime = currentTime;
+	currentTime = clock();
+	deltaTime = (currentTime - previousTime);
+	
+	update(deltaTime);
+}
+
+void update(double deltaTime)
+{
+	car.move(deltaTime);
 	camera.update();
 }
 /**************** END OPENGL FUNCTIONS *************************/
@@ -337,7 +353,7 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 			processKeys();			//process keyboard
 			
 			display();					// Draw The Scene
-			update();					// update variables
+			calculateDeltaTime();		// calculate delta time and call update using delta time
 			SwapBuffers(hDC);				// Swap Buffers (Double Buffering)
 		}
 	}
