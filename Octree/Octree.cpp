@@ -563,4 +563,3 @@ int Octree::getPrimitiveListSize()
 {
 	return PrimitiveListSize;
 }
-

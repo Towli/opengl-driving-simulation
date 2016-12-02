@@ -19,6 +19,16 @@ GameObject::GameObject(Shader* shader, ThreeDModel* model)
 	currentAngle = 0.0;
 }
 
+GameObject::GameObject(Shader* shader, vector<ThreeDModel*> models)
+{
+	this->models = models;
+	this->shader = shader;
+	position = glm::vec3(0, 0, 0);
+	speed = 0.0;
+	turnSpeed = 0.07;
+	currentAngle = 0.0;
+}
+
 /* Should not be used when drawing with a ThreeDModel; only used for testing. */
 void GameObject::draw(){}
 
@@ -62,4 +72,9 @@ void GameObject::setSpeed(float speed)
 ThreeDModel* GameObject::getModel()
 {
 	return this->model;
+}
+
+vector<ThreeDModel*> GameObject::getModels()
+{
+	return this->models;
 }

@@ -11,6 +11,7 @@
 class GameObject
 {
 private:
+	vector<ThreeDModel*> models;
 	ThreeDModel* model;
 	Shader* shader;
 	glm::vec3 position;
@@ -20,6 +21,7 @@ private:
 
 public:
 	GameObject(Shader* shader, ThreeDModel* model);
+	GameObject(Shader* shader, vector<ThreeDModel*> models);
 	GameObject();
 	~GameObject();
 
@@ -28,6 +30,7 @@ public:
 
 	/* ThreeDModel */
 	ThreeDModel* getModel();
+	vector<ThreeDModel*> getModels();
 
 	/* Position & direction handling*/
 	glm::vec3 getPosition();

@@ -32,6 +32,7 @@ GameObject car;
 // MODEL LOADING
 ThreeDModel cityBlocks;
 ThreeDModel mitsubishi;
+ThreeDModel frontWheels;
 OBJLoader objLoader;
 
 // CAMERA
@@ -133,7 +134,7 @@ void init()
 		//first calculate the centre of the object, then move all the vertices
 		//back so that the centre is on the origin.
 		mitsubishi.calcCentrePoint();
-		mitsubishi.centreOnZero();
+		//mitsubishi.centreOnZero();
 
 		mitsubishi.calcVertNormalsUsingOctree();  //the method will construct the octree if it hasn't already been created.
 
@@ -148,8 +149,35 @@ void init()
 		cout << " model failed to load " << endl;
 	}
 
+	if (objLoader.loadModel("Models/mitsubishi_eclipse/front_wheels.obj", frontWheels)) //returns true if the model is loaded, puts the model in the model parameter
+	{
+		cout << " Model: 'front_wheels.obj' loaded. " << endl;
+
+		//if you want to translate the object to the origin of the screen,
+		//first calculate the centre of the object, then move all the vertices
+		//back so that the centre is on the origin.
+		frontWheels.calcCentrePoint();
+		//frontWheels.centreOnZero();
+
+		frontWheels.calcVertNormalsUsingOctree();  //the method will construct the octree if it hasn't already been created.
+
+												  //turn on VBO by setting useVBO to true in threeDmodel.cpp default constructor - only permitted on 8 series cards and higher
+		frontWheels.initDrawElements();
+		frontWheels.initVBO(myShader);
+		frontWheels.deleteVertexFaceData();
+
+	}
+	else
+	{
+		cout << " model failed to load " << endl;
+	}
+
 	// Initialise GameObjects
-	car = GameObject(myShader, &mitsubishi);
+	vector<ThreeDModel*> carAnatomy = vector<ThreeDModel*>();
+	carAnatomy.push_back(&mitsubishi);
+	carAnatomy.push_back(&frontWheels);
+
+	car = GameObject(myShader, carAnatomy);
 	ground = GameObject(myShader, &cityBlocks);
 
 	// Initialise a third-person camera to follow a Box object
@@ -196,22 +224,26 @@ void display()
 	
 	glUseProgram(myShader->handle());  // use the shader
 
+	std::cout << "car speed: " << car.getSpeed() << std::endl;
+
 	ModelViewMatrix = glm::translate(viewingMatrix, glm::vec3(carPosition));
 	ModelViewMatrix = glm::rotate(ModelViewMatrix, car.getDirection(), glm::vec3(0.0f, 1.0f, 0.0f));
+	ModelViewMatrix = glm::translate(ModelViewMatrix, glm::vec3(0.0f, 0.0f, -6.0f));
 
-	// Car transformations
-	ModelViewMatrix = glm::translate(ModelViewMatrix, glm::vec3(0.0f, 2.0f, 0.0f));
+	// Local transformations on primary GameObject (car)
+	ModelViewMatrix = glm::translate(ModelViewMatrix, glm::vec3(0.0f, -3.0f, 0.0f));
 	ModelViewMatrix = glm::rotate(ModelViewMatrix, 180.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-	ModelViewMatrix = glm::rotate(ModelViewMatrix, 90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 	ModelViewMatrix = glm::scale(ModelViewMatrix, glm::vec3(0.4f, 0.4f, 0.4f));
 
 	normalMatrix = glm::inverseTranspose(glm::mat3(ModelViewMatrix));
 	glUniformMatrix3fv(glGetUniformLocation(myShader->handle(), "NormalMatrix"), 1, GL_FALSE, &normalMatrix[0][0]);
-	
+
 	//Pass the uniform for the modelview matrix - in this case just "r"
 	glUniformMatrix4fv(glGetUniformLocation(myShader->handle(), "ModelViewMatrix"), 1, GL_FALSE, &ModelViewMatrix[0][0]);
 
-	car.getModel()->drawElementsUsingVBO(myShader);
+	for (int i = 0; i < car.getModels().size(); i++)
+		car.getModels().at(i)->drawElementsUsingVBO(myShader);
+
 
 	ModelViewMatrix = glm::translate(viewingMatrix, glm::vec3(0.0, -2.0, 0.0));
 	normalMatrix = glm::inverseTranspose(glm::mat3(ModelViewMatrix));
