@@ -1,10 +1,10 @@
 # 3ds Max Wavefront OBJ Exporter v0.97b - (c)2007 guruware
-# File Created: 02.12.2016 11:44:56
+# File Created: 02.12.2016 12:16:32
 
 mtllib front_wheels.mtl
 
 #
-# object wheels_n_acc
+# object front_wheels
 #
 
 v  -13.4687 8.7776 19.1813
@@ -2811,8 +2811,8 @@ vt 0.3077 0.1277 0.0000
 vt 0.3363 0.1706 0.0000
 # 642 texture coords
 
-g wheels_n_acc
-usemtl 02___Default
+g front_wheels
+usemtl _front_wheels02___Default
 s 1
 f 1/1/1 2/2/2 3/3/3 
 f 3/3/3 4/4/4 1/1/1 

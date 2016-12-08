@@ -5,24 +5,14 @@
 
 #include "shaders/Shader.h"   // include shader header file, this is not part of OpenGL
 
-
 #include "glm\glm.hpp"
 #include "glm\gtc\matrix_transform.hpp"
 #include "glm\gtc\type_ptr.hpp"
 #include "glm\gtc\matrix_inverse.hpp"
 
-glm::mat4 objectRotation;
-glm::quat q;
-
-Shader* myShader;  ///shader object 
+// SHADER OBJECTS
+Shader* myShader; 
 Shader* myBasicShader;
-
-// MODEL LOADING
-#include "3DStruct\threeDModel.h"
-#include "Obj\OBJLoader.h"
-
-float amount = 0;
-float temp = 0.002f;
 
 // GAME OBJECTS
 #include "GameObject.h"
@@ -30,9 +20,12 @@ GameObject ground;
 GameObject car;
 
 // MODEL LOADING
+#include "3DStruct\threeDModel.h"
+#include "Obj\OBJLoader.h"
 ThreeDModel cityBlocks;
 ThreeDModel mitsubishi;
-ThreeDModel frontWheels;
+ThreeDModel frontWheelLeft, frontWheelRight;
+ThreeDModel backWheels;
 OBJLoader objLoader;
 
 // CAMERA
@@ -54,13 +47,11 @@ float Light_Ambient_And_Diffuse[4] = {0.8f, 0.8f, 0.9f, 1.0f};
 float Light_Specular[4] = {1.0f,1.0f,1.0f,1.0f};
 float LightPos[4] = {0.0f, 15.0f, 0.0f, 0.0f};
 
-//
+// MISC INPUT VARIABLES
 int	mouse_x=0, mouse_y=0;
 bool LeftPressed = false;
 int screenWidth=600, screenHeight=600;
 bool keys[256];
-float spin=180;
-float speed=0;
 
 //DELTA-TIME
 #include <time.h>
@@ -68,7 +59,6 @@ clock_t t;
 double currentTime = clock();
 double previousTime = 0.0;
 double deltaTime = 0.0;
-
 
 //OPENGL FUNCTION PROTOTYPES
 void display();				//called in winmain to draw everything to the screen
@@ -126,9 +116,9 @@ void init()
 		cout << " model failed to load " << endl;
 	}
 
-	if (objLoader.loadModel("Models/mitsubishi_eclipse/mitsubishi_eclipse.obj", mitsubishi)) //returns true if the model is loaded, puts the model in the model parameter
+	if (objLoader.loadModel("Models/mitsubishi_eclipse/mitsubishi_eclipse_3.obj", mitsubishi)) //returns true if the model is loaded, puts the model in the model parameter
 	{
-		cout << " Model: 'mitsubishi_eclipse.obj' loaded. " << endl;
+		cout << " Model: 'mitsubishi_eclipse_3.obj' loaded. " << endl;
 
 		//if you want to translate the object to the origin of the screen,
 		//first calculate the centre of the object, then move all the vertices
@@ -149,22 +139,68 @@ void init()
 		cout << " model failed to load " << endl;
 	}
 
-	if (objLoader.loadModel("Models/mitsubishi_eclipse/front_wheels.obj", frontWheels)) //returns true if the model is loaded, puts the model in the model parameter
+	if (objLoader.loadModel("Models/mitsubishi_eclipse/front_wheel_left.obj", frontWheelLeft)) //returns true if the model is loaded, puts the model in the model parameter
 	{
-		cout << " Model: 'front_wheels.obj' loaded. " << endl;
+		cout << " Model: 'front_wheel_left.obj' loaded. " << endl;
 
 		//if you want to translate the object to the origin of the screen,
 		//first calculate the centre of the object, then move all the vertices
 		//back so that the centre is on the origin.
-		frontWheels.calcCentrePoint();
+		//frontWheelLeft.calcCentrePoint();
 		//frontWheels.centreOnZero();
 
-		frontWheels.calcVertNormalsUsingOctree();  //the method will construct the octree if it hasn't already been created.
+		frontWheelLeft.calcVertNormalsUsingOctree();  //the method will construct the octree if it hasn't already been created.
 
 												  //turn on VBO by setting useVBO to true in threeDmodel.cpp default constructor - only permitted on 8 series cards and higher
-		frontWheels.initDrawElements();
-		frontWheels.initVBO(myShader);
-		frontWheels.deleteVertexFaceData();
+		frontWheelLeft.initDrawElements();
+		frontWheelLeft.initVBO(myShader);
+		frontWheelLeft.deleteVertexFaceData();
+
+	}
+	else
+	{
+		cout << " model failed to load " << endl;
+	}
+
+	if (objLoader.loadModel("Models/mitsubishi_eclipse/front_wheel_right.obj", frontWheelRight)) //returns true if the model is loaded, puts the model in the model parameter
+	{
+		cout << " Model: 'front_wheel_right.obj' loaded. " << endl;
+
+		//if you want to translate the object to the origin of the screen,
+		//first calculate the centre of the object, then move all the vertices
+		//back so that the centre is on the origin.
+		//frontWheelRight.calcCentrePoint();
+		//frontWheels.centreOnZero();
+
+		frontWheelRight.calcVertNormalsUsingOctree();  //the method will construct the octree if it hasn't already been created.
+
+		//turn on VBO by setting useVBO to true in threeDmodel.cpp default constructor - only permitted on 8 series cards and higher
+		frontWheelRight.initDrawElements();
+		frontWheelRight.initVBO(myShader);
+		frontWheelRight.deleteVertexFaceData();
+
+	}
+	else
+	{
+		cout << " model failed to load " << endl;
+	}
+
+	if (objLoader.loadModel("Models/mitsubishi_eclipse/back_wheels.obj", backWheels)) //returns true if the model is loaded, puts the model in the model parameter
+	{
+		cout << " Model: 'back_wheels.obj' loaded. " << endl;
+
+		//if you want to translate the object to the origin of the screen,
+		//first calculate the centre of the object, then move all the vertices
+		//back so that the centre is on the origin.
+		//frontWheelRight.calcCentrePoint();
+		//frontWheels.centreOnZero();
+
+		backWheels.calcVertNormalsUsingOctree();  //the method will construct the octree if it hasn't already been created.
+
+		//turn on VBO by setting useVBO to true in threeDmodel.cpp default constructor - only permitted on 8 series cards and higher
+		backWheels.initDrawElements();
+		backWheels.initVBO(myShader);
+		backWheels.deleteVertexFaceData();
 
 	}
 	else
@@ -175,7 +211,10 @@ void init()
 	// Initialise GameObjects
 	vector<ThreeDModel*> carAnatomy = vector<ThreeDModel*>();
 	carAnatomy.push_back(&mitsubishi);
-	carAnatomy.push_back(&frontWheels);
+	carAnatomy.push_back(&frontWheelLeft);
+	carAnatomy.push_back(&frontWheelRight);
+	carAnatomy.push_back(&backWheels);
+	
 
 	car = GameObject(myShader, carAnatomy);
 	ground = GameObject(myShader, &cityBlocks);
@@ -195,6 +234,7 @@ void display()
 
 	glm::mat4 viewingMatrix;
 	glm::vec3 carPosition = car.getPosition();
+
 	// Get the camera's viewing matrix
 	viewingMatrix = camera.getViewingMatrix();
 	glUniformMatrix4fv(glGetUniformLocation(myShader->handle(), "ViewMatrix"), 1, GL_FALSE, &viewingMatrix[0][0]);
@@ -224,14 +264,14 @@ void display()
 	
 	glUseProgram(myShader->handle());  // use the shader
 
-	std::cout << "car speed: " << car.getSpeed() << std::endl;
-
+	// Model (local) Transformations on primary GameObject (Car)
 	ModelViewMatrix = glm::translate(viewingMatrix, glm::vec3(carPosition));
 	ModelViewMatrix = glm::rotate(ModelViewMatrix, car.getDirection(), glm::vec3(0.0f, 1.0f, 0.0f));
 	ModelViewMatrix = glm::translate(ModelViewMatrix, glm::vec3(0.0f, 0.0f, -6.0f));
 
-	// Local transformations on primary GameObject (car)
-	ModelViewMatrix = glm::translate(ModelViewMatrix, glm::vec3(0.0f, -3.0f, 0.0f));
+	// ModelView (global) transformations on primary GameObject (Car)
+	ModelViewMatrix = glm::translate(ModelViewMatrix, glm::vec3(0.0f, -3.5f, 0.0f));
+	//ModelViewMatrix = glm::rotate(ModelViewMatrix, -90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 	ModelViewMatrix = glm::rotate(ModelViewMatrix, 180.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 	ModelViewMatrix = glm::scale(ModelViewMatrix, glm::vec3(0.4f, 0.4f, 0.4f));
 
@@ -243,7 +283,6 @@ void display()
 
 	for (int i = 0; i < car.getModels().size(); i++)
 		car.getModels().at(i)->drawElementsUsingVBO(myShader);
-
 
 	ModelViewMatrix = glm::translate(viewingMatrix, glm::vec3(0.0, -2.0, 0.0));
 	normalMatrix = glm::inverseTranspose(glm::mat3(ModelViewMatrix));
@@ -270,11 +309,29 @@ void processKeys()
 {
 	if (keys['W'])
 	{
-		if (car.getSpeed() < 1.0) {
-			car.setSpeed(car.getSpeed() + 0.01);
+		car.setSpeed(car.getSpeed() + 0.002f);
+		if (car.getSpeed() > 0.2f)
+			car.setSpeed(0.2f);
+	} 
+	else if (keys['S'])
+	{
+		car.setSpeed(car.getSpeed() - 0.002f);
+		if (car.getSpeed() < -0.2f)
+			car.setSpeed(-0.2f);
+	}
+	else
+	{
+		if (car.getSpeed() < 0.0f) {
+			car.setSpeed(car.getSpeed() + 0.002f);
+			if (car.getSpeed() >= 0) {
+				car.setSpeed(0.0f);
+			}
 		}
 		else {
-			car.setSpeed(1.0);
+			car.setSpeed(car.getSpeed() - 0.002f);
+			if (car.getSpeed() <= 0) {
+				car.setSpeed(0.0f);
+			}
 		}
 	}
 
@@ -282,17 +339,6 @@ void processKeys()
 	{
 		car.turn(1);
 	}
-
-	if (keys['S'])
-	{
-		if (car.getSpeed() > -1.0) {
-			car.setSpeed(car.getSpeed() - 0.01);
-		}
-		else {
-			car.setSpeed(-1.0);
-		}
-	}
-
 	if (keys['D'])
 	{
 		car.turn(-1);
@@ -316,7 +362,6 @@ void processKeys()
 
 void calculateDeltaTime() 
 {
-	std::cout << currentTime << std::endl;
 	previousTime = currentTime;
 	currentTime = clock();
 	deltaTime = (currentTime - previousTime);

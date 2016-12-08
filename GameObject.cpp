@@ -34,7 +34,6 @@ void GameObject::draw(){}
 
 void GameObject::move(double deltaTime)
 {
-	speed *= 0.9;
 	position.x += glm::sin(glm::radians((getDirection()))) * speed * deltaTime;
 	position.z += glm::cos(glm::radians((getDirection()))) * speed * deltaTime;
 }

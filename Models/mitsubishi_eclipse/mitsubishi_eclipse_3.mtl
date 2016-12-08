@@ -1,7 +1,7 @@
 # 3ds Max Wavefront OBJ Exporter v0.97b - (c)2007 guruware
-# File Created: 02.12.2016 12:16:32
+# File Created: 03.12.2016 01:22:30
 
-newmtl _front_wheels02___Default
+newmtl _mitsubishi_eclipse_2_mitsubishi_eclipse_mitsubishi_eclipse_mitsubishi_eclipsedefault
 	Ns 10.0000
 	Ni 1.5000
 	d 1.0000
@@ -12,5 +12,5 @@ newmtl _front_wheels02___Default
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka wheelsDiffuseMap.png
-	map_Kd wheelsDiffuseMap.png
+	map_Ka mitsubishiDiffuseMap.png
+	map_Kd mitsubishiDiffuseMap.png
