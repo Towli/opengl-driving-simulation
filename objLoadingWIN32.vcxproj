@@ -93,8 +93,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="console.cpp" />
     <ClCompile Include="Box.cpp" />
+    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="3dStruct\BoundingBox.cpp" />
     <ClCompile Include="3dStruct\threeDModel.cpp" />
@@ -108,10 +110,12 @@
     <ClCompile Include="shaders\Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="console.h" />
     <ClInclude Include="3dStruct\BoundingBox.h" />
     <ClInclude Include="3dStruct\threeDModel.h" />
     <ClInclude Include="Box.h" />
+    <ClInclude Include="GameObject.h" />
     <ClInclude Include="Images\imageloader.h" />
     <ClInclude Include="Images\nvImage.h" />
     <ClInclude Include="Obj\OBJLoader.h" />

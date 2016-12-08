@@ -26,6 +26,7 @@ ThreeDModel cityBlocks;
 ThreeDModel mitsubishi;
 ThreeDModel frontWheelLeft, frontWheelRight;
 ThreeDModel backWheels;
+vector<ThreeDModel> buildings;
 OBJLoader objLoader;
 
 // CAMERA
@@ -215,7 +216,6 @@ void init()
 	carAnatomy.push_back(&frontWheelRight);
 	carAnatomy.push_back(&backWheels);
 	
-
 	car = GameObject(myShader, carAnatomy);
 	ground = GameObject(myShader, &cityBlocks);
 
