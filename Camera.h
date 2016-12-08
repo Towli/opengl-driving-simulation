@@ -3,7 +3,7 @@
 #include "glm\gtc\matrix_transform.hpp"
 #include "GameObject.h"
 
-enum class Type { FIRST = 1, THIRD = 2, STATIC = 3 };
+enum class Type { FIRST = 1, THIRD = 2, STATIC = 3, ACTION = 4 };
 
 class Camera
 {
@@ -29,6 +29,7 @@ public:
 	void updateFPSView();
 	void updateTPSView();
 	void updateStaticView();
+	void updateActionView();
 
 	// Getter & Setter for Viewing Matrix
 	glm::mat4 getViewingMatrix();

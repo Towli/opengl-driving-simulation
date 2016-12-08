@@ -356,6 +356,11 @@ void processKeys()
 	{
 		camera.setType(Type::STATIC);
 	}
+
+	if (keys['4'])
+	{
+		camera.setType(Type::ACTION);
+	}
 }
 
 void calculateDeltaTime() 

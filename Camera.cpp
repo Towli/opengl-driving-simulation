@@ -27,6 +27,9 @@
 			case Type::STATIC:
 				updateStaticView();
 				break;
+			case Type::ACTION:
+				updateActionView();
+				break;
 			default:
 				updateStaticView();
 				break;
@@ -49,7 +52,7 @@
 		lookAt = targetObject->getPosition();
 	}
 
-	void Camera::updateStaticView()
+	void Camera::updateActionView()
 	{
 		position.y = 20.0f;
 		glm::vec2 distance = getDistance(targetObject);
@@ -57,6 +60,12 @@
 			position = glm::vec3(targetObject->getPosition().x, 20.0f, targetObject->getPosition().z);
 		}
 		lookAt = targetObject->getPosition() + glm::vec3(0.0f, 1.0f, 5.0f);	// adding this vector is a hacky fix to prevent linker error!
+	}
+
+	void Camera::updateStaticView()
+	{
+		position = glm::vec3(targetObject->getPosition().x, 70.0f, targetObject->getPosition().z);
+		lookAt = targetObject->getPosition() + glm::vec3(0.1f, 0.1f, 0.0f);
 	}
 
 	glm::vec2 Camera::getDistance(GameObject* targetObject) {
