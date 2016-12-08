@@ -116,9 +116,9 @@ void init()
 		cout << " model failed to load " << endl;
 	}
 
-	if (objLoader.loadModel("Models/mitsubishi_eclipse/mitsubishi_eclipse_3.obj", mitsubishi)) //returns true if the model is loaded, puts the model in the model parameter
+	if (objLoader.loadModel("Models/mitsubishi_eclipse/mitsubishi_chassis.obj", mitsubishi)) //returns true if the model is loaded, puts the model in the model parameter
 	{
-		cout << " Model: 'mitsubishi_eclipse_3.obj' loaded. " << endl;
+		cout << " Model: 'mitsubishi_chassis.obj' loaded. " << endl;
 
 		//if you want to translate the object to the origin of the screen,
 		//first calculate the centre of the object, then move all the vertices
@@ -271,8 +271,6 @@ void display()
 
 	// ModelView (global) transformations on primary GameObject (Car)
 	ModelViewMatrix = glm::translate(ModelViewMatrix, glm::vec3(0.0f, -3.5f, 0.0f));
-	//ModelViewMatrix = glm::rotate(ModelViewMatrix, -90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
-	ModelViewMatrix = glm::rotate(ModelViewMatrix, 180.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 	ModelViewMatrix = glm::scale(ModelViewMatrix, glm::vec3(0.4f, 0.4f, 0.4f));
 
 	normalMatrix = glm::inverseTranspose(glm::mat3(ModelViewMatrix));
