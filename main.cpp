@@ -241,26 +241,26 @@ void processKeys()
 {
 	if (keys['W'])
 	{
-		car.setSpeed(car.getSpeed() + 0.002f);
-		if (car.getSpeed() > 0.2f)
-			car.setSpeed(0.2f);
+		car.setSpeed(car.getSpeed() + 0.1f);
+		if (car.getSpeed() > 200.0f)
+			car.setSpeed(200.0f);
 	} 
 	else if (keys['S'])
 	{
-		car.setSpeed(car.getSpeed() - 0.002f);
-		if (car.getSpeed() < -0.2f)
-			car.setSpeed(-0.2f);
+		car.setSpeed(car.getSpeed() - 0.1f);
+		if (car.getSpeed() < -200.0f)
+			car.setSpeed(-200.0f);
 	}
 	else
 	{
 		if (car.getSpeed() < 0.0f) {
-			car.setSpeed(car.getSpeed() + 0.002f);
+			car.setSpeed(car.getSpeed() + 0.1f);	
 			if (car.getSpeed() >= 0) {
 				car.setSpeed(0.0f);
 			}
 		}
 		else {
-			car.setSpeed(car.getSpeed() - 0.002f);
+			car.setSpeed(car.getSpeed() - 0.1f);
 			if (car.getSpeed() <= 0) {
 				car.setSpeed(0.0f);
 			}
@@ -302,6 +302,7 @@ void calculateDeltaTime()
 	previousTime = currentTime;
 	currentTime = clock();
 	deltaTime = (currentTime - previousTime);
+	deltaTime = deltaTime / (double)CLOCKS_PER_SEC;	
 	
 	update(deltaTime);
 }

@@ -7,7 +7,6 @@
 
 #define PI 3.1415926535897
 
-
 class GameObject
 {
 private:
@@ -17,6 +16,7 @@ private:
 	glm::vec3 position;
 	float currentAngle;
 	float turnSpeed;
+	float deltaTurnSpeed;
 	float speed;
 
 public:

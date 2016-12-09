@@ -3,7 +3,7 @@
 GameObject::GameObject()
 {
 	speed = 0.0;
-	turnSpeed = 0.07;
+	//turnSpeed = 0.07;
 	currentAngle = 0.0;
 }
 
@@ -15,7 +15,8 @@ GameObject::GameObject(Shader* shader, ThreeDModel* model)
 	this->shader = shader;
 	position = glm::vec3(0, 0, 0);
 	speed = 0.0;
-	turnSpeed = 0.07;
+	//turnSpeed = 0.07;
+	turnSpeed = 5.0f;
 	currentAngle = 0.0;
 }
 
@@ -25,7 +26,8 @@ GameObject::GameObject(Shader* shader, vector<ThreeDModel*> models)
 	this->shader = shader;
 	position = glm::vec3(0, 0, 0);
 	speed = 0.0;
-	turnSpeed = 0.07;
+	//turnSpeed = 0.07;
+	turnSpeed = 5.0f;
 	currentAngle = 0.0;
 }
 
@@ -34,13 +36,14 @@ void GameObject::draw(){}
 
 void GameObject::move(double deltaTime)
 {
+	this->deltaTurnSpeed = turnSpeed * deltaTime;
 	position.x += glm::sin(glm::radians((getDirection()))) * speed * deltaTime;
 	position.z += glm::cos(glm::radians((getDirection()))) * speed * deltaTime;
 }
 
 void GameObject::turn(int direction)
 {
-	currentAngle += turnSpeed * direction;
+	currentAngle += deltaTurnSpeed * direction;
 }
 
 float GameObject::getDirection()
