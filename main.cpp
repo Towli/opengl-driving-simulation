@@ -21,8 +21,8 @@ GameObject ground;
 GameObject car;
 
 // CUBEMAP
-#include "Box.h"
-Box* cubeMap;
+#include "CubeMap.h"
+CubeMap* cubeMap;
 
 // MODEL LOADING
 #include "3DStruct\threeDModel.h"
@@ -81,25 +81,30 @@ void init()
 	glClearColor(1.0, 1.0, 1.0, 0.0);	//sets the clear colour to yellow
 	glEnable(GL_DEPTH_TEST);
 
-	//shader for normal models
+	// --------------------- LOAD SHADERS ---------------------
 	myShader = new Shader;
-
 	if (!myShader->load("BasicView", "glslfiles/basicTransformations.vert", "glslfiles/basicTransformations.frag"))
 	{
-		cout << "failed to load shader" << endl;
+		cout << "failed to load basicTransformations shader" << endl;
 	}
 
 	myBasicShader = new Shader;
-
 	if (!myBasicShader->load("Basic", "glslfiles/basic.vert", "glslfiles/basic.frag"))
 	{
-		cout << "failed to load shader" << endl;
+		cout << "failed to load basic shader" << endl;
 	}
 
-	glUseProgram(myShader->handle());  // use the shader
+	cubeMapShader = new Shader;
+	if (!cubeMapShader->load("CubeMap", "glslfiles/cubeMap.vert", "glslfiles/cubeMap.frag"))
+	{
+		cout << "failed to load CubeMap shader" << endl;
+	}
+
+	glUseProgram(myShader->handle());
 
 	glEnable(GL_TEXTURE_2D);
 
+	// --------------------- MODEL LOADING ---------------------
 	// Load models with .obj loader
 	vector<ThreeDModel*> carAnatomy = vector<ThreeDModel*>();
 	cityBlocks = loadModel("Models/CityBlocksRoads/city_roads.obj", myShader);
@@ -122,10 +127,15 @@ void init()
 		buildings.push_back(loadModel(path, myShader));
 	}
 
-	// Initialise GameObjects
+	// --------------------- INIT GAMEOBJECTS ---------------------
 	car = GameObject(myShader, carAnatomy);
 	ground = GameObject(myShader, cityBlocks);
 
+	// --------------------- INIT CUBEMAP ---------------------
+	cubeMap = new CubeMap(cubeMapShader);
+	
+
+	// --------------------- INIT CAMERA ---------------------
 	// Initialise a third-person camera to follow a Box object
 	camera = Camera(&car, Type::THIRD);
 }
@@ -156,6 +166,12 @@ void display()
 	glUniform4fv(glGetUniformLocation(myShader->handle(), "material_specular"), 1, Material_Specular);
 	glUniform1f(glGetUniformLocation(myShader->handle(), "material_shininess"), Material_Shininess);
 
+	//DRAW THE CUBEMAP
+	ModelViewMatrix = glm::translate(viewingMatrix, glm::vec3(0.0f, 100.0f, 0.0f));
+	glUseProgram(cubeMapShader->handle());
+	glUniformMatrix4fv(glGetUniformLocation(cubeMapShader->handle(), "ProjectionMatrix"), 1, GL_FALSE, &ProjectionMatrix[0][0]);
+	glUniformMatrix4fv(glGetUniformLocation(cubeMapShader->handle(), "ViewMatrix"), 1, GL_FALSE, &ModelViewMatrix[0][0]);
+	cubeMap->render();
 
 	//DRAW THE MODEL
 	ModelViewMatrix = viewingMatrix;

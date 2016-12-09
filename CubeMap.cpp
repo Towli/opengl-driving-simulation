@@ -4,15 +4,17 @@
 CubeMap::CubeMap(Shader* shader) : GameObject()
 {
 	constructGeometry();
-	this->faces.push_back("/CubeMap/textures/hangingstone_bk.jpg");
-	this->faces.push_back("/CubeMap/textures/hangingstone_dn.jpg");
-	this->faces.push_back("/CubeMap/textures/hangingstone_ft.jpg");
-	this->faces.push_back("/CubeMap/textures/hangingstone_lf.jpg");
-	this->faces.push_back("/CubeMap/textures/hangingstone_rt.jpg");
-	this->faces.push_back("/CubeMap/textures/hangingstone_up.jpg");
+	this->faces.push_back("Models/CubeMap/textures/right.png");
+	this->faces.push_back("Models/CubeMap/textures/left.png");
+	this->faces.push_back("Models/CubeMap/textures/top.png");
+	this->faces.push_back("Models/CubeMap/textures/bottom.png");
+	this->faces.push_back("Models/CubeMap/textures/back.png");
+	this->faces.push_back("Models/CubeMap/textures/front.png");
 	createCubeMap();
 	this->cubeMapShader = shader;
 }
+
+CubeMap::CubeMap() {}
 
 void CubeMap::createCubeMap()
 {
@@ -26,12 +28,15 @@ void CubeMap::createCubeMap()
 	glBindTexture(GL_TEXTURE_CUBE_MAP, this->texture);
 		for (GLuint i = 0; i < this->faces.size(); i++)
 		{
-			if (image.loadImageFromFile(faces[i]))
+			if (image.loadImageFromFile(faces.at(i)))
 			{
 				glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, image.getInternalFormat(), image.getWidth(), image.getHeight(), 0, image.getFormat(), image.getType(), image.getLevel(0));
-				//glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-				cout << "Loaded CubeMap image : " << i + 1 << endl;
-			}	
+				cout << "Loaded CubeMap image: " << i + 1 << endl;
+			}
+			else
+			{
+				cout << "Failed to load CubeMap image: " << i + 1 << endl;
+			}
 		}
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -54,47 +59,47 @@ void CubeMap::constructGeometry()
 {
 	GLfloat vertices[] =
 	{
-		-10.0f,  10.0f, -10.0f,
-		-10.0f, -10.0f, -10.0f,
-		10.0f, -10.0f, -10.0f,
-		10.0f, -10.0f, -10.0f,
-		10.0f,  10.0f, -10.0f,
-		-10.0f,  10.0f, -10.0f,
+		-1000.0f,  1000.0f, -1000.0f,
+		-1000.0f, -1000.0f, -1000.0f,
+		1000.0f, -1000.0f, -1000.0f,
+		1000.0f, -1000.0f, -1000.0f,
+		1000.0f,  1000.0f, -1000.0f,
+		-1000.0f,  1000.0f, -1000.0f,
 
-		-10.0f, -10.0f,  10.0f,
-		-10.0f, -10.0f, -10.0f,
-		-10.0f,  10.0f, -10.0f,
-		-10.0f,  10.0f, -10.0f,
-		-10.0f,  10.0f,  10.0f,
-		-10.0f, -10.0f,  10.0f,
+		-1000.0f, -1000.0f,  1000.0f,
+		-1000.0f, -1000.0f, -1000.0f,
+		-1000.0f,  1000.0f, -1000.0f,
+		-1000.0f,  1000.0f, -1000.0f,
+		-1000.0f,  1000.0f,  1000.0f,
+		-1000.0f, -1000.0f,  1000.0f,
 
-		10.0f, -10.0f, -10.0f,
-		10.0f, -10.0f,  10.0f,
-		10.0f,  10.0f,  10.0f,
-		10.0f,  10.0f,  10.0f,
-		10.0f,  10.0f, -10.0f,
-		10.0f, -10.0f, -10.0f,
+		1000.0f, -1000.0f, -1000.0f,
+		1000.0f, -1000.0f,  1000.0f,
+		1000.0f,  1000.0f,  1000.0f,
+		1000.0f,  1000.0f,  1000.0f,
+		1000.0f,  1000.0f, -1000.0f,
+		1000.0f, -1000.0f, -1000.0f,
 
-		-10.0f, -10.0f,  10.0f,
-		-10.0f,  10.0f,  10.0f,
-		10.0f,  10.0f,  10.0f,
-		10.0f,  10.0f,  10.0f,
-		10.0f, -10.0f,  10.0f,
-		-10.0f, -10.0f,  10.0f,
+		-1000.0f, -1000.0f,  1000.0f,
+		-1000.0f,  1000.0f,  1000.0f,
+		1000.0f,  1000.0f,  1000.0f,
+		1000.0f,  1000.0f,  1000.0f,
+		1000.0f, -1000.0f,  1000.0f,
+		-1000.0f, -1000.0f,  1000.0f,
 
-		-10.0f,  10.0f, -10.0f,
-		10.0f,  10.0f, -10.0f,
-		10.0f,  10.0f,  10.0f,
-		10.0f,  10.0f,  10.0f,
-		-10.0f,  10.0f,  10.0f,
-		-10.0f,  10.0f, -10.0f,
+		-1000.0f,  1000.0f, -1000.0f,
+		1000.0f,  1000.0f, -1000.0f,
+		1000.0f,  1000.0f,  1000.0f,
+		1000.0f,  1000.0f,  1000.0f,
+		-1000.0f,  1000.0f,  1000.0f,
+		-1000.0f,  1000.0f, -1000.0f,
 
-		-10.0f, -10.0f, -10.0f,
-		-10.0f, -10.0f,  10.0f,
-		10.0f, -10.0f, -10.0f,
-		10.0f, -10.0f, -10.0f,
-		-10.0f, -10.0f,  10.0f,
-		10.0f, -10.0f,  10.0f
+		-1000.0f, -1000.0f, -1000.0f,
+		-1000.0f, -1000.0f,  1000.0f,
+		1000.0f, -1000.0f, -1000.0f,
+		1000.0f, -1000.0f, -1000.0f,
+		-1000.0f, -1000.0f,  1000.0f,
+		1000.0f, -1000.0f,  1000.0f
 	};
 
 	glGenVertexArrays(1, &this->m_vaoID);
