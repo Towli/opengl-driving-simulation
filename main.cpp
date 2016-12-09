@@ -22,11 +22,11 @@ GameObject car;
 // MODEL LOADING
 #include "3DStruct\threeDModel.h"
 #include "Obj\OBJLoader.h"
-ThreeDModel cityBlocks;
+ThreeDModel* cityBlocks;
 ThreeDModel mitsubishi;
 ThreeDModel frontWheelLeft, frontWheelRight;
 ThreeDModel backWheels;
-vector<ThreeDModel> buildings;
+vector<ThreeDModel*> buildings;
 OBJLoader objLoader;
 
 // CAMERA
@@ -68,6 +68,7 @@ void init();				//called in winmain when the program starts.
 void processKeys();         //called in winmain to process keyboard input
 void update(double deltaTime);				//called in winmain to update variables
 void calculateDeltaTime();
+ThreeDModel* loadModel(char* filePath, Shader* shader);
 
 /*************    START OF OPENGL FUNCTIONS   ****************/
 void init()
@@ -94,130 +95,31 @@ void init()
 
 	glEnable(GL_TEXTURE_2D);
 
-	if (objLoader.loadModel("Models/CityBlocksRoads/city_roads.obj", cityBlocks)) //returns true if the model is loaded, puts the model in the model parameter
-	{
-		cout << " Model: 'city_roads.obj' loaded. " << endl;
-		
-		//if you want to translate the object to the origin of the screen,
-		//first calculate the centre of the object, then move all the vertices
-		//back so that the centre is on the origin.
-		cityBlocks.calcCentrePoint();
-		cityBlocks.centreOnZero();
+	// Load models with .obj loader
+	vector<ThreeDModel*> carAnatomy = vector<ThreeDModel*>();
+	cityBlocks = loadModel("Models/CityBlocksRoads/city_roads.obj", myShader);
+	carAnatomy.push_back(loadModel("Models/mitsubishi_eclipse/mitsubishi_chassis.obj", myShader));
+	carAnatomy.push_back(loadModel("Models/mitsubishi_eclipse/front_wheel_left.obj", myShader));
+	carAnatomy.push_back(loadModel("Models/mitsubishi_eclipse/front_wheel_right.obj", myShader));
+	carAnatomy.push_back(loadModel("Models/mitsubishi_eclipse/back_wheels.obj", myShader));
+	
+	cityBlocks->calcCentrePoint();
+	cityBlocks->centreOnZero();
 
-		cityBlocks.calcVertNormalsUsingOctree();  //the method will construct the octree if it hasn't already been created.
+	// Load buildings
+	buildings = vector<ThreeDModel*>();
 
-		//turn on VBO by setting useVBO to true in threeDmodel.cpp default constructor - only permitted on 8 series cards and higher
-		cityBlocks.initDrawElements();
-		cityBlocks.initVBO(myShader);
-		cityBlocks.deleteVertexFaceData();
-
-	}
-	else
-	{
-		cout << " model failed to load " << endl;
-	}
-
-	if (objLoader.loadModel("Models/mitsubishi_eclipse/mitsubishi_chassis.obj", mitsubishi)) //returns true if the model is loaded, puts the model in the model parameter
-	{
-		cout << " Model: 'mitsubishi_chassis.obj' loaded. " << endl;
-
-		//if you want to translate the object to the origin of the screen,
-		//first calculate the centre of the object, then move all the vertices
-		//back so that the centre is on the origin.
-		mitsubishi.calcCentrePoint();
-		//mitsubishi.centreOnZero();
-
-		mitsubishi.calcVertNormalsUsingOctree();  //the method will construct the octree if it hasn't already been created.
-
-		//turn on VBO by setting useVBO to true in threeDmodel.cpp default constructor - only permitted on 8 series cards and higher
-		mitsubishi.initDrawElements();
-		mitsubishi.initVBO(myShader);
-		mitsubishi.deleteVertexFaceData();
-
-	}
-	else
-	{
-		cout << " model failed to load " << endl;
-	}
-
-	if (objLoader.loadModel("Models/mitsubishi_eclipse/front_wheel_left.obj", frontWheelLeft)) //returns true if the model is loaded, puts the model in the model parameter
-	{
-		cout << " Model: 'front_wheel_left.obj' loaded. " << endl;
-
-		//if you want to translate the object to the origin of the screen,
-		//first calculate the centre of the object, then move all the vertices
-		//back so that the centre is on the origin.
-		//frontWheelLeft.calcCentrePoint();
-		//frontWheels.centreOnZero();
-
-		frontWheelLeft.calcVertNormalsUsingOctree();  //the method will construct the octree if it hasn't already been created.
-
-												  //turn on VBO by setting useVBO to true in threeDmodel.cpp default constructor - only permitted on 8 series cards and higher
-		frontWheelLeft.initDrawElements();
-		frontWheelLeft.initVBO(myShader);
-		frontWheelLeft.deleteVertexFaceData();
-
-	}
-	else
-	{
-		cout << " model failed to load " << endl;
-	}
-
-	if (objLoader.loadModel("Models/mitsubishi_eclipse/front_wheel_right.obj", frontWheelRight)) //returns true if the model is loaded, puts the model in the model parameter
-	{
-		cout << " Model: 'front_wheel_right.obj' loaded. " << endl;
-
-		//if you want to translate the object to the origin of the screen,
-		//first calculate the centre of the object, then move all the vertices
-		//back so that the centre is on the origin.
-		//frontWheelRight.calcCentrePoint();
-		//frontWheels.centreOnZero();
-
-		frontWheelRight.calcVertNormalsUsingOctree();  //the method will construct the octree if it hasn't already been created.
-
-		//turn on VBO by setting useVBO to true in threeDmodel.cpp default constructor - only permitted on 8 series cards and higher
-		frontWheelRight.initDrawElements();
-		frontWheelRight.initVBO(myShader);
-		frontWheelRight.deleteVertexFaceData();
-
-	}
-	else
-	{
-		cout << " model failed to load " << endl;
-	}
-
-	if (objLoader.loadModel("Models/mitsubishi_eclipse/back_wheels.obj", backWheels)) //returns true if the model is loaded, puts the model in the model parameter
-	{
-		cout << " Model: 'back_wheels.obj' loaded. " << endl;
-
-		//if you want to translate the object to the origin of the screen,
-		//first calculate the centre of the object, then move all the vertices
-		//back so that the centre is on the origin.
-		//frontWheelRight.calcCentrePoint();
-		//frontWheels.centreOnZero();
-
-		backWheels.calcVertNormalsUsingOctree();  //the method will construct the octree if it hasn't already been created.
-
-		//turn on VBO by setting useVBO to true in threeDmodel.cpp default constructor - only permitted on 8 series cards and higher
-		backWheels.initDrawElements();
-		backWheels.initVBO(myShader);
-		backWheels.deleteVertexFaceData();
-
-	}
-	else
-	{
-		cout << " model failed to load " << endl;
+	int numBuildingModels = 47;
+	for (int i = 1; i <= numBuildingModels; i++) {
+		string strPath = "Models/buildings/building_" + to_string(i) + ".obj";
+		char* path = &strPath[0];
+		cout << "path: " << path << endl;
+		buildings.push_back(loadModel(path, myShader));
 	}
 
 	// Initialise GameObjects
-	vector<ThreeDModel*> carAnatomy = vector<ThreeDModel*>();
-	carAnatomy.push_back(&mitsubishi);
-	carAnatomy.push_back(&frontWheelLeft);
-	carAnatomy.push_back(&frontWheelRight);
-	carAnatomy.push_back(&backWheels);
-	
 	car = GameObject(myShader, carAnatomy);
-	ground = GameObject(myShader, &cityBlocks);
+	ground = GameObject(myShader, cityBlocks);
 
 	// Initialise a third-person camera to follow a Box object
 	camera = Camera(&car, Type::THIRD);
@@ -289,8 +191,40 @@ void display()
 	glUniformMatrix4fv(glGetUniformLocation(myShader->handle(), "ModelViewMatrix"), 1, GL_FALSE, &ModelViewMatrix[0][0]);
 
 	ground.getModel()->drawElementsUsingVBO(myShader);
+	
+	for (int i = 0; i < buildings.size(); i++)
+		buildings.at(i)->drawElementsUsingVBO(myShader);
 
 	glFlush();
+}
+
+ThreeDModel* loadModel(char* filePath, Shader* shader)
+{
+	ThreeDModel* model = new ThreeDModel();
+
+	if (objLoader.loadModel(filePath, *model)) //returns true if the model is loaded, puts the model in the model parameter
+	{
+		cout << "Model: " << filePath << " loaded" << endl;
+
+		//if you want to translate the object to the origin of the screen,
+		//first calculate the centre of the object, then move all the vertices
+		//back so that the centre is on the origin.
+		model->calcCentrePoint();
+		//model->centreOnZero();
+
+		model->calcVertNormalsUsingOctree();  //the method will construct the octree if it hasn't already been created.
+
+		//turn on VBO by setting useVBO to true in threeDmodel.cpp default constructor - only permitted on 8 series cards and higher
+		model->initDrawElements();
+		model->initVBO(myShader);
+		model->deleteVertexFaceData();
+
+		return model;
+	}
+	else
+	{
+		cout << "Model: " << filePath << "failed to load " << endl;
+	}
 }
 
 void reshape(int width, int height)		// Resize the OpenGL window
