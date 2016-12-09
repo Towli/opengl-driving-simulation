@@ -181,8 +181,18 @@ void display()
 	//Pass the uniform for the modelview matrix - in this case just "r"
 	glUniformMatrix4fv(glGetUniformLocation(myShader->handle(), "ModelViewMatrix"), 1, GL_FALSE, &ModelViewMatrix[0][0]);
 
-	for (int i = 0; i < car.getModels().size(); i++)
-		car.getModels().at(i)->drawElementsUsingVBO(myShader);
+	for each(ThreeDModel* m in car.getModels()) {
+		m->drawElementsUsingVBO(myShader);
+	}
+
+	ModelViewMatrix = glm::translate(viewingMatrix, glm::vec3(0.0, -2.0, 0.0));
+	ModelViewMatrix = glm::rotate(ModelViewMatrix, 180.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+	normalMatrix = glm::inverseTranspose(glm::mat3(ModelViewMatrix));
+	glUniformMatrix3fv(glGetUniformLocation(myShader->handle(), "NormalMatrix"), 1, GL_FALSE, &normalMatrix[0][0]);
+	//Pass the uniform for the modelview matrix - in this case just "r"
+	glUniformMatrix4fv(glGetUniformLocation(myShader->handle(), "ModelViewMatrix"), 1, GL_FALSE, &ModelViewMatrix[0][0]);
+
+	ground.getModel()->drawElementsUsingVBO(myShader);
 
 	ModelViewMatrix = glm::translate(viewingMatrix, glm::vec3(0.0, -2.0, 0.0));
 	normalMatrix = glm::inverseTranspose(glm::mat3(ModelViewMatrix));
@@ -190,10 +200,9 @@ void display()
 	//Pass the uniform for the modelview matrix - in this case just "r"
 	glUniformMatrix4fv(glGetUniformLocation(myShader->handle(), "ModelViewMatrix"), 1, GL_FALSE, &ModelViewMatrix[0][0]);
 
-	ground.getModel()->drawElementsUsingVBO(myShader);
-	
-	for (int i = 0; i < buildings.size(); i++)
-		buildings.at(i)->drawElementsUsingVBO(myShader);
+	for each(ThreeDModel* m in buildings) {
+		m->drawElementsUsingVBO(myShader);
+	}
 
 	glFlush();
 }
