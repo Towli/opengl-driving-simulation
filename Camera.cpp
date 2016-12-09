@@ -47,7 +47,7 @@
 	void Camera::updateTPSView()
 	{
 		float direction = targetObject->getDirection();
-		offset = glm::vec3(25 * glm::sin(glm::radians(direction)), -12.5f, 25 * glm::cos(glm::radians(direction)));
+		offset = glm::vec3(30 * glm::sin(glm::radians(direction)), -10.0f, 30 * glm::cos(glm::radians(direction)));
 		position = targetObject->getPosition() - offset;
 		lookAt = targetObject->getPosition();
 	}
@@ -56,7 +56,7 @@
 	{
 		position.y = 20.0f;
 		glm::vec2 distance = getDistance(targetObject);
-		if (distance.x > 100 || distance.y > 100 || distance.x < -100 || distance.y < -100) {
+		if (distance.x > 200 || distance.y > 200 || distance.x < -200 || distance.y < -200) {
 			position = glm::vec3(targetObject->getPosition().x, 20.0f, targetObject->getPosition().z);
 		}
 		lookAt = targetObject->getPosition() + glm::vec3(0.0f, 1.0f, 5.0f);	// adding this vector is a hacky fix to prevent linker error!

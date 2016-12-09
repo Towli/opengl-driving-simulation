@@ -13,11 +13,16 @@
 // SHADER OBJECTS
 Shader* myShader; 
 Shader* myBasicShader;
+Shader* cubeMapShader;
 
 // GAME OBJECTS
 #include "GameObject.h"
 GameObject ground;
 GameObject car;
+
+// CUBEMAP
+#include "Box.h"
+Box* cubeMap;
 
 // MODEL LOADING
 #include "3DStruct\threeDModel.h"
