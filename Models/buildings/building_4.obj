@@ -1,10 +1,10 @@
 # 3ds Max Wavefront OBJ Exporter v0.97b - (c)2007 guruware
-# File Created: 09.12.2016 01:47:10
+# File Created: 10.12.2016 02:28:26
 
-mtllib MyPrefixText-BakedBuilding-299.mtl
+mtllib building_4.mtl
 
 #
-# object BakedBuilding_299
+# object building_4
 #
 
 v  440.7011 15.0919 -110.6930
@@ -283,7 +283,7 @@ vt 0.5843 0.7419 0.0000
 vt 0.6376 0.7419 0.0000
 # 192 texture coords
 
-g BakedBuilding_299
+g building_4
 usemtl 07___Default
 s off
 f 1/1/1 2/2/1 3/3/1 
