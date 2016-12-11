@@ -15,13 +15,17 @@ void Box::render()
 	glBindVertexArray(m_vaoID);		// select VAO
 	glPolygonMode(GL_FRONT_AND_BACK, GL_TRIANGLES);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-	glDrawElements(GL_TRIANGLES, numOfTris * 3, GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_LINE_LOOP, numOfTris * 3, GL_UNSIGNED_INT, 0);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glBindVertexArray(0); //unbind the vertex array object
 }
 
 void Box::constructGeometry(Shader* myShader, float minx, float miny, float minz, float maxx, float maxy, float maxz)
 {
+	// Store min and max value for this box
+	this->min = glm::vec3(minx, miny, minz);
+	this->max = glm::vec3(maxx, maxy, maxz);
+
 	// First simple object
 	verts[0] = minx;   verts[1] = miny;  verts[2] = minz;
 	verts[3] = minx;   verts[4] = maxy;  verts[5] = minz;
@@ -89,4 +93,26 @@ void Box::constructGeometry(Shader* myShader, float minx, float miny, float minz
 	glEnableVertexAttribArray(0);
 
 	glBindVertexArray(0);
+}
+
+void Box::setCentre(glm::vec3 centre)
+{
+	this->cx = centre.x;
+	this->cy = centre.y;
+	this->cz = centre.z;
+}
+
+glm::vec3 Box::getCentre()
+{
+	return glm::vec3(cx, cy, cz);
+}
+
+glm::vec3 Box::getMin()
+{
+	return this->min;
+}
+
+glm::vec3 Box::getMax()
+{
+	return this->max;
 }

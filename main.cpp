@@ -227,6 +227,7 @@ void display()
 
 	for each(ThreeDModel* m in buildings) {
 		m->drawElementsUsingVBO(myShader);
+		m->drawOctreeLeaves(myShader);
 	}
 
 	glFlush();

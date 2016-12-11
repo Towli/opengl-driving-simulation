@@ -1,3 +1,5 @@
+#pragma once
+
 #include "..\gl\glew.h"
 #include "..\glm\glm.hpp"
 
@@ -25,5 +27,7 @@ public:
 	void constructGeometry(Shader* myShader, int level);
 	void render();
 	void setRadius(float rad);
+	float getRadius();
 	void setCentre(glm::vec3 centre);
+	glm::vec3 getCentre();
 };
