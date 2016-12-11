@@ -271,13 +271,13 @@ void processKeys()
 {
 	if (keys['W'])
 	{
-		car.setSpeed(car.getSpeed() + 50.0f*deltaTime);
+		car.setSpeed(car.getSpeed() + 60.0f*deltaTime);
 		if (car.getSpeed() > 200.0f)
 			car.setSpeed(200.0f);
 	} 
 	else if (keys['S'])
 	{
-		car.setSpeed(car.getSpeed() - 50.0f*deltaTime);
+		car.setSpeed(car.getSpeed() - 60.0f*deltaTime);
 		if (car.getSpeed() < -200.0f)
 			car.setSpeed(-200.0f);
 	}

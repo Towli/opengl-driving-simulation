@@ -3,7 +3,6 @@
 GameObject::GameObject()
 {
 	speed = 0.0;
-	//turnSpeed = 0.07;
 	currentAngle = 0.0;
 }
 
@@ -15,8 +14,7 @@ GameObject::GameObject(Shader* shader, ThreeDModel* model)
 	this->shader = shader;
 	position = glm::vec3(0, 0, 0);
 	speed = 0.0;
-	//turnSpeed = 0.07;
-	turnSpeed = 5.0f;
+	turnSpeed = 3.0f;
 	currentAngle = 0.0;
 }
 
@@ -26,8 +24,7 @@ GameObject::GameObject(Shader* shader, vector<ThreeDModel*> models)
 	this->shader = shader;
 	position = glm::vec3(0, 0, 0);
 	speed = 0.0;
-	//turnSpeed = 0.07;
-	turnSpeed = 5.0f;
+	turnSpeed = 3.0f;
 	currentAngle = 0.0;
 }
 
