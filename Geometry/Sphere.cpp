@@ -6,8 +6,20 @@ const double PI = 3.14159265358979323846f;
 
 Sphere::Sphere()
 {
-	cx = cy = cz = 0.0;
-	r = 0.5;
+	cx = 0.0f;
+	cy = 0.0f;
+	cz = 0.0f;
+	r = 0.5f;
+}
+
+Sphere::Sphere(Shader* shader, glm::vec3 centre, float radius)
+{
+	cx = centre.x;
+	cy = centre.y;
+	cz = centre.z;
+	r = radius;
+
+	constructGeometry(shader, 15);
 }
 
 void Sphere::setRadius(float rad)
@@ -15,11 +27,11 @@ void Sphere::setRadius(float rad)
 	r = rad;
 }
 
-void Sphere::setCentre(float x, float y, float z)
+void Sphere::setCentre(glm::vec3 centre)
 {
-	cx = x;
-	cy = y;
-	cz = z;
+	cx = centre.x;
+	cy = centre.y;
+	cz = centre.z;
 }
 
 void Sphere::render()
@@ -29,7 +41,7 @@ void Sphere::render()
 
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-	glDrawElements(GL_TRIANGLES, numOfTris*3, GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_LINE_LOOP, numOfTris*3, GL_UNSIGNED_INT, 0);
 			
 	// Done	
 	glBindVertexArray(0); //unbind the vertex array object

@@ -4,6 +4,7 @@
 #include "3dStruct\threeDModel.h"
 #include "glm\glm.hpp"
 #include <math.h>
+#include "Geometry\Sphere.h"
 
 #define PI 3.1415926535897
 
@@ -18,6 +19,7 @@ private:
 	float turnSpeed;
 	float deltaTurnSpeed;
 	float speed;
+	Sphere boundingSphere;
 
 public:
 	GameObject(Shader* shader, ThreeDModel* model);
@@ -26,7 +28,7 @@ public:
 	~GameObject();
 
 	/* Rendering */
-	void draw();
+	void drawGeometry();
 
 	/* ThreeDModel */
 	ThreeDModel* getModel();
@@ -42,5 +44,8 @@ public:
 	void move(double deltaTime);
 	void setSpeed(float speed);
 	float getSpeed();
+
+	/* Update state */
+	void update();
 };
 

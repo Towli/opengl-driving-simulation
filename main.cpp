@@ -208,6 +208,8 @@ void display()
 		m->drawElementsUsingVBO(myShader);
 	}
 
+	car.drawGeometry();
+
 	ModelViewMatrix = glm::translate(viewingMatrix, glm::vec3(0.0, -2.0, 0.0));
 	ModelViewMatrix = glm::rotate(ModelViewMatrix, 180.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 	normalMatrix = glm::inverseTranspose(glm::mat3(ModelViewMatrix));

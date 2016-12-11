@@ -1,4 +1,5 @@
 #include "..\gl\glew.h"
+#include "..\glm\glm.hpp"
 
 class Shader;
 
@@ -20,8 +21,9 @@ private:
 	float r;		//radius of the sphere
 public:
 	Sphere();
+	Sphere(Shader* shader, glm::vec3 centre, float radius);
 	void constructGeometry(Shader* myShader, int level);
 	void render();
 	void setRadius(float rad);
-	void setCentre(float x, float y, float z);
+	void setCentre(glm::vec3 centre);
 };

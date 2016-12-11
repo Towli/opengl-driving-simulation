@@ -9,7 +9,6 @@ class Shader;
 const int NumberOfVertexCoords = 24;
 const int NumberOfTriangleIndices = 36;
 
-
 class Box : public GameObject
 {
 private:

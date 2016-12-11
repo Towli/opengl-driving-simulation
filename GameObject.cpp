@@ -16,6 +16,7 @@ GameObject::GameObject(Shader* shader, ThreeDModel* model)
 	speed = 0.0;
 	turnSpeed = 3.0f;
 	currentAngle = 0.0;
+	boundingSphere = Sphere(shader, position, 40.0f);
 }
 
 GameObject::GameObject(Shader* shader, vector<ThreeDModel*> models)
@@ -26,16 +27,26 @@ GameObject::GameObject(Shader* shader, vector<ThreeDModel*> models)
 	speed = 0.0;
 	turnSpeed = 3.0f;
 	currentAngle = 0.0;
+	boundingSphere = Sphere(shader, position, 40.0f);
+}
+
+void GameObject::update()
+{
+	this->boundingSphere.setCentre(position);
 }
 
 /* Should not be used when drawing with a ThreeDModel; only used for testing. */
-void GameObject::draw(){}
+void GameObject::drawGeometry()
+{
+	boundingSphere.render();
+}
 
 void GameObject::move(double deltaTime)
 {
 	this->deltaTurnSpeed = turnSpeed * deltaTime;
 	position.x += glm::sin(glm::radians((getDirection()))) * speed * deltaTime;
 	position.z += glm::cos(glm::radians((getDirection()))) * speed * deltaTime;
+	update();
 }
 
 void GameObject::turn(int direction)
