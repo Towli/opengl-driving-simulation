@@ -1,5 +1,5 @@
 #include "Box.h"
-#include "shaders\Shader.h"
+#include "..\shaders\Shader.h"
 
 int Box::numOfTris = 12;
 int Box::numOfVerts = 8;

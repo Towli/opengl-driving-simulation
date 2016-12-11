@@ -6,7 +6,7 @@
 using namespace std;
 
 #include "../3DStruct/threeDModel.h"
-#include "../Box.h"
+#include "../Geometry/Box.h"
 
 class Shader;
 

@@ -1,8 +1,8 @@
 #ifndef _BOX_H
 #define _BOX_H
 
-#include "gl\glew.h"
-#include "GameObject.h"
+#include "..\gl\glew.h"
+#include "..\GameObject.h"
 
 class Shader;
 
