@@ -47,7 +47,7 @@
 	void Camera::updateTPSView()
 	{
 		float direction = targetObject->getDirection();
-		offset = glm::vec3(30 * glm::sin(glm::radians(direction)), -10.0f, 30 * glm::cos(glm::radians(direction)));
+		offset = glm::vec3(35 * glm::sin(glm::radians(direction)), -10.0f, 35 * glm::cos(glm::radians(direction)));
 		position = targetObject->getPosition() - offset;
 		lookAt = targetObject->getPosition();
 	}
