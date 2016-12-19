@@ -16,7 +16,7 @@ GameObject::GameObject(Shader* shader, ThreeDModel* model)
 	speed = 0.0;
 	turnSpeed = 3.0f;
 	currentAngle = 0.0;
-	boundingSphere = Sphere(shader, position, 40.0f);
+	boundingSphere = Sphere(shader, position, 15.0f);
 }
 
 GameObject::GameObject(Shader* shader, vector<ThreeDModel*> models)
@@ -27,7 +27,7 @@ GameObject::GameObject(Shader* shader, vector<ThreeDModel*> models)
 	speed = 0.0;
 	turnSpeed = 3.0f;
 	currentAngle = 0.0;
-	boundingSphere = Sphere(shader, position, 40.0f);
+	boundingSphere = Sphere(shader, position, 15.0f);
 }
 
 void GameObject::update()
@@ -87,4 +87,9 @@ ThreeDModel* GameObject::getModel()
 vector<ThreeDModel*> GameObject::getModels()
 {
 	return this->models;
+}
+
+Sphere GameObject::getBoundingSphere()
+{
+	return this->boundingSphere;
 }

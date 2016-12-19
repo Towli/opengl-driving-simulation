@@ -144,6 +144,7 @@ public:
 	//Methods useful for octree
 	int getOctreePrimitiveListSize();
 	int getOctreeVertexListSize();
+	Octree* getOctree();
 	bool isPrimitiveIntersectingOctreeCell(double boxcenter[3],double boxhalfsize[3], int PrimIndex);
 	bool isVertexIntersectingOctreeCell(double min[3], double max[3], int VertIndex);
 	void calcBoundingBox(double& minX, double& minY, double& minZ, double& maxX, double& maxY, double& maxZ);

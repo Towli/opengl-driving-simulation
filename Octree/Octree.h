@@ -43,6 +43,9 @@ public:
 	Octree* getChild(int i);
 	int getLevel();
 	void processVerticesByLeaf(ThreeDModel* model);
+	Box* getBoundingBox();
+	glm::vec3 getMin();
+	glm::vec3 getMax();
 };
 
 #endif _OCTREE_H

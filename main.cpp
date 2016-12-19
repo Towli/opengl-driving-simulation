@@ -10,6 +10,9 @@
 #include "glm\gtc\type_ptr.hpp"
 #include "glm\gtc\matrix_inverse.hpp"
 
+#include "CollisionTest.h"
+#include "Octree/Octree.h"
+
 // SHADER OBJECTS
 Shader* myShader; 
 Shader* myBasicShader;
@@ -74,6 +77,7 @@ void processKeys();         //called in winmain to process keyboard input
 void update(double deltaTime);				//called in winmain to update variables
 void calculateDeltaTime();
 ThreeDModel* loadModel(char* filePath, Shader* shader);
+void handleCollisions();
 
 /*************    START OF OPENGL FUNCTIONS   ****************/
 void init()
@@ -194,6 +198,11 @@ void display()
 	ModelViewMatrix = glm::rotate(ModelViewMatrix, car.getDirection(), glm::vec3(0.0f, 1.0f, 0.0f));
 	ModelViewMatrix = glm::translate(ModelViewMatrix, glm::vec3(0.0f, 0.0f, -6.0f));
 
+	// Draw Bounding Sphere
+	glUniformMatrix3fv(glGetUniformLocation(myShader->handle(), "NormalMatrix"), 1, GL_FALSE, &normalMatrix[0][0]);
+	glUniformMatrix4fv(glGetUniformLocation(myShader->handle(), "ModelViewMatrix"), 1, GL_FALSE, &ModelViewMatrix[0][0]);
+	car.drawGeometry();
+
 	// ModelView (global) transformations on primary GameObject (Car)
 	ModelViewMatrix = glm::translate(ModelViewMatrix, glm::vec3(0.0f, -3.5f, 0.0f));
 	ModelViewMatrix = glm::scale(ModelViewMatrix, glm::vec3(0.4f, 0.4f, 0.4f));
@@ -208,7 +217,7 @@ void display()
 		m->drawElementsUsingVBO(myShader);
 	}
 
-	car.drawGeometry();
+	//car.drawGeometry();
 
 	ModelViewMatrix = glm::translate(viewingMatrix, glm::vec3(0.0, -2.0, 0.0));
 	ModelViewMatrix = glm::rotate(ModelViewMatrix, 180.0f, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -227,7 +236,7 @@ void display()
 
 	for each(ThreeDModel* m in buildings) {
 		m->drawElementsUsingVBO(myShader);
-		m->drawOctreeLeaves(myShader);
+		m->drawBoundingBox(myShader);
 	}
 
 	glFlush();
@@ -342,10 +351,25 @@ void calculateDeltaTime()
 	update(deltaTime);
 }
 
+void handleCollisions()
+{
+	Octree* oct = buildings[0]->getOctree();
+	bool collision = CollisionTest::sphereAABB(car.getBoundingSphere(), oct->getMin(), oct->getMax());
+	if (collision)
+	{
+		cout << "Collision!" << endl;
+		cout << "Sphere's centre = " << "(" << car.getBoundingSphere().getCentre().x << ", " << car.getBoundingSphere().getCentre().y << ", " << car.getBoundingSphere().getCentre().z << ")" << endl;
+		cout << "Sphere's radius = " << car.getBoundingSphere().getRadius() << endl;
+		cout << "Octree's min = " << "(" << oct->getMin().x << ", " << oct->getMin().y << ", " << oct->getMin().z << ")" << endl;
+		cout << "Octree's max = " << "(" << oct->getMax().x << ", " << oct->getMax().y << ", " << oct->getMax().z << ")" << endl;
+	}
+}
+
 void update(double deltaTime)
 {
 	car.move(deltaTime);
 	camera.update();
+	handleCollisions();
 }
 /**************** END OPENGL FUNCTIONS *************************/
 

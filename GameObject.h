@@ -45,6 +45,9 @@ public:
 	void setSpeed(float speed);
 	float getSpeed();
 
+	/* 3D Structures */
+	Sphere getBoundingSphere();
+
 	/* Update state */
 	void update();
 };

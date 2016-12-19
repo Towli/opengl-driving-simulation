@@ -27,6 +27,11 @@ void Sphere::setRadius(float rad)
 	r = rad;
 }
 
+float Sphere::getRadius()
+{
+	return this->r;
+}
+
 void Sphere::setCentre(glm::vec3 centre)
 {
 	this->cx = centre.x;
@@ -36,7 +41,7 @@ void Sphere::setCentre(glm::vec3 centre)
 
 glm::vec3 Sphere::getCentre()
 {
-	return glm::vec3(cx, cy, cz);
+	return glm::vec3(this->cx, this->cy, this->cz);
 }
 
 void Sphere::render()

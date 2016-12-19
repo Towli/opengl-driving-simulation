@@ -544,6 +544,11 @@ void Octree::drawBoxesAtLeaves(Shader* myShader)
 	}
 }
 
+Box* Octree::getBoundingBox()
+{
+	return this->box;
+}
+
 Octree* Octree::getChild(int i)
 {
 	return children[i];
@@ -562,4 +567,13 @@ int* Octree::getPrimitiveList()
 int Octree::getPrimitiveListSize()
 {
 	return PrimitiveListSize;
+}
+
+glm::vec3 Octree::getMin()
+{
+	return glm::vec3(minX, minY, minZ);
+}
+glm::vec3 Octree::getMax()
+{
+	return glm::vec3(maxX, maxY, maxZ);
 }

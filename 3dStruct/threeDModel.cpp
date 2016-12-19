@@ -166,8 +166,8 @@ void ThreeDModel::constructOctree()
 {
 	double minX,minY,minZ,maxX,maxY,maxZ;
 	calcBoundingBox(minX, minY, minZ, maxX, maxY, maxZ);
-	//cout << minX << " " << minY << " " << minZ << endl;
-	//cout << maxX << " " << maxY << " " << maxZ << endl;
+	cout << minX << " " << minY << " " << minZ << endl;
+	cout << maxX << " " << maxY << " " << maxZ << endl;
 
 	octree = new Octree();
 	octree->start(0, minX, minY, minZ, maxX, maxY, maxZ, this);
@@ -299,6 +299,11 @@ int ThreeDModel::getOctreePrimitiveListSize()
 int ThreeDModel::getOctreeVertexListSize()
 {
 	return numberOfVertices;
+}
+
+Octree* ThreeDModel::getOctree()
+{
+	return octree;
 }
 
 bool ThreeDModel::isVertexIntersectingOctreeCell(double min[3], double max[3], int VertIndex)
