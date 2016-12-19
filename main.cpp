@@ -69,6 +69,10 @@ double currentTime = clock();
 double previousTime = 0.0;
 double deltaTime = 0.0;
 
+// GLOBAL BOOLEANS
+bool drawBoundingSpheres = false;
+bool drawBoundingBoxes = false;
+
 //OPENGL FUNCTION PROTOTYPES
 void display();				//called in winmain to draw everything to the screen
 void reshape(int width, int height);				//called when the window is resized
@@ -196,12 +200,13 @@ void display()
 	// Model (local) Transformations on primary GameObject (Car)
 	ModelViewMatrix = glm::translate(viewingMatrix, glm::vec3(carPosition));
 	ModelViewMatrix = glm::rotate(ModelViewMatrix, car.getDirection(), glm::vec3(0.0f, 1.0f, 0.0f));
+	if (drawBoundingSpheres) {
+		// Draw Car's Bounding Sphere
+		glUniformMatrix3fv(glGetUniformLocation(myShader->handle(), "NormalMatrix"), 1, GL_FALSE, &normalMatrix[0][0]);
+		glUniformMatrix4fv(glGetUniformLocation(myShader->handle(), "ModelViewMatrix"), 1, GL_FALSE, &ModelViewMatrix[0][0]);
+		car.drawGeometry();
+	}
 	ModelViewMatrix = glm::translate(ModelViewMatrix, glm::vec3(0.0f, 0.0f, -6.0f));
-
-	// Draw Bounding Sphere
-	glUniformMatrix3fv(glGetUniformLocation(myShader->handle(), "NormalMatrix"), 1, GL_FALSE, &normalMatrix[0][0]);
-	glUniformMatrix4fv(glGetUniformLocation(myShader->handle(), "ModelViewMatrix"), 1, GL_FALSE, &ModelViewMatrix[0][0]);
-	car.drawGeometry();
 
 	// ModelView (global) transformations on primary GameObject (Car)
 	ModelViewMatrix = glm::translate(ModelViewMatrix, glm::vec3(0.0f, -3.5f, 0.0f));
@@ -236,7 +241,8 @@ void display()
 
 	for each(ThreeDModel* m in buildings) {
 		m->drawElementsUsingVBO(myShader);
-		m->drawBoundingBox(myShader);
+		if (drawBoundingBoxes)
+			m->drawBoundingBox(myShader);
 	}
 
 	glFlush();
@@ -339,6 +345,18 @@ void processKeys()
 	{
 		camera.setType(Type::ACTION);
 	}
+
+	if (keys['5'])
+	{
+		drawBoundingBoxes = true;
+		drawBoundingSpheres = true;
+	}
+
+	if (keys['6'])
+	{
+		drawBoundingBoxes = false;
+		drawBoundingSpheres = false;
+	}
 }
 
 void calculateDeltaTime() 
@@ -353,15 +371,16 @@ void calculateDeltaTime()
 
 void handleCollisions()
 {
-	Octree* oct = buildings[0]->getOctree();
-	bool collision = CollisionTest::sphereAABB(car.getBoundingSphere(), oct->getMin(), oct->getMax());
-	if (collision)
-	{
-		cout << "Collision!" << endl;
-		cout << "Sphere's centre = " << "(" << car.getBoundingSphere().getCentre().x << ", " << car.getBoundingSphere().getCentre().y << ", " << car.getBoundingSphere().getCentre().z << ")" << endl;
-		cout << "Sphere's radius = " << car.getBoundingSphere().getRadius() << endl;
-		cout << "Octree's min = " << "(" << oct->getMin().x << ", " << oct->getMin().y << ", " << oct->getMin().z << ")" << endl;
-		cout << "Octree's max = " << "(" << oct->getMax().x << ", " << oct->getMax().y << ", " << oct->getMax().z << ")" << endl;
+	for each(ThreeDModel* m in buildings) {
+		Octree* oct = m->getOctree();
+		bool collision = CollisionTest::sphereAABB(car.getBoundingSphere(), oct->getMin(), oct->getMax());
+		if (collision) {
+			cout << "Collision!" << endl;
+			cout << "Sphere's centre = " << "(" << car.getBoundingSphere().getCentre().x << ", " << car.getBoundingSphere().getCentre().y << ", " << car.getBoundingSphere().getCentre().z << ")" << endl;
+			cout << "Sphere's radius = " << car.getBoundingSphere().getRadius() << endl;
+			cout << "Octree's min = " << "(" << oct->getMin().x << ", " << oct->getMin().y << ", " << oct->getMin().z << ")" << endl;
+			cout << "Octree's max = " << "(" << oct->getMax().x << ", " << oct->getMax().y << ", " << oct->getMax().z << ")" << endl;
+		}
 	}
 }
 
