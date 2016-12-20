@@ -41,6 +41,12 @@ void GameObject::drawGeometry()
 	boundingSphere.render();
 }
 
+void GameObject::respondToCollision()
+{
+	// Move in opposite direction for short period of time, tapering off
+	this->setSpeed(-getSpeed());
+}
+
 void GameObject::move(double deltaTime)
 {
 	this->deltaTurnSpeed = turnSpeed * deltaTime;

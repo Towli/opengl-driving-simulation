@@ -45,6 +45,9 @@ public:
 	void setSpeed(float speed);
 	float getSpeed();
 
+	/* Collision */
+	void respondToCollision();
+
 	/* 3D Structures */
 	Sphere getBoundingSphere();
 

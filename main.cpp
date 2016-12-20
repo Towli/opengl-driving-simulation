@@ -222,8 +222,6 @@ void display()
 		m->drawElementsUsingVBO(myShader);
 	}
 
-	//car.drawGeometry();
-
 	ModelViewMatrix = glm::translate(viewingMatrix, glm::vec3(0.0, -2.0, 0.0));
 	ModelViewMatrix = glm::rotate(ModelViewMatrix, 180.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 	normalMatrix = glm::inverseTranspose(glm::mat3(ModelViewMatrix));
@@ -375,6 +373,7 @@ void handleCollisions()
 		Octree* oct = m->getOctree();
 		bool collision = CollisionTest::sphereAABB(car.getBoundingSphere(), oct->getMin(), oct->getMax());
 		if (collision) {
+			car.respondToCollision();
 			cout << "Collision!" << endl;
 			cout << "Sphere's centre = " << "(" << car.getBoundingSphere().getCentre().x << ", " << car.getBoundingSphere().getCentre().y << ", " << car.getBoundingSphere().getCentre().z << ")" << endl;
 			cout << "Sphere's radius = " << car.getBoundingSphere().getRadius() << endl;
