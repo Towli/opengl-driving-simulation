@@ -35,6 +35,7 @@ ThreeDModel mitsubishi;
 ThreeDModel frontWheelLeft, frontWheelRight;
 ThreeDModel backWheels;
 vector<ThreeDModel*> buildings;
+vector<ThreeDModel*> lightPoles;
 OBJLoader objLoader;
 
 // CAMERA
@@ -130,13 +131,22 @@ void init()
 
 	// Load buildings
 	buildings = vector<ThreeDModel*>();
-
 	int numBuildingModels = 47;
 	for (int i = 1; i <= numBuildingModels; i++) {
 		string strPath = "Models/buildings/building_" + to_string(i) + ".obj";
 		char* path = &strPath[0];
 		cout << "path: " << path << endl;
 		buildings.push_back(loadModel(path, myShader));
+	}
+
+	// Load light poles
+	lightPoles = vector<ThreeDModel*>();
+	int numLightPoles = 79;
+	for (int i = 1; i <= numLightPoles; i++) {
+		string strPath = "Models/light_poles/light_pole_" + to_string(i) + ".obj";
+		char* path = &strPath[0];
+		cout << "path: " << path << endl;
+		lightPoles.push_back(loadModel(path, myShader));
 	}
 
 	// --------------------- INIT GAMEOBJECTS ---------------------
@@ -266,6 +276,10 @@ void display()
 		m->drawElementsUsingVBO(myShader);
 		if (drawBoundingBoxes)
 			m->drawBoundingBox(myShader);
+	}
+
+	for each(ThreeDModel* m in lightPoles) {
+		m->drawElementsUsingVBO(myShader);
 	}
 
 	glFlush();
