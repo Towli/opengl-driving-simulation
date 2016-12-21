@@ -57,6 +57,10 @@ float Light_Ambient_And_Diffuse[4] = {0.8f, 0.8f, 0.9f, 1.0f};
 float Light_Specular[4] = {1.0f, 1.0f, 1.0f, 1.0f};
 float LightPos[4] = {0.0f, 1.0f, 0.0f, 0.0f};
 
+// SIMULATION STATES
+enum class SimulationState { RUNNING = 1, ENDED = 2 };
+SimulationState STATE;
+
 // MISC INPUT VARIABLES
 int	mouse_x=0, mouse_y=0;
 bool LeftPressed = false;
@@ -70,11 +74,11 @@ double currentTime = clock();
 double previousTime = 0.0;
 double deltaTime = 0.0;
 
-// GLOBAL BOOLEANS
+// GLOBALS
 bool drawBoundingSpheres = false;
 bool drawBoundingBoxes = false;
-bool dayLighting = true;
-bool nightLighting = false;
+float mapMinX = -490.0f, mapMaxX = 490.0f, mapMinZ = -490.0f, mapMaxZ = 490.0f;
+float fallAngle = 0.0f;
 
 //OPENGL FUNCTION PROTOTYPES
 void display();				//called in winmain to draw everything to the screen
@@ -87,6 +91,7 @@ void toggleLighting();
 void calculateDeltaTime();
 ThreeDModel* loadModel(char* filePath, Shader* shader);
 void handleCollisions();
+void handleOOB();
 
 /*************    START OF OPENGL FUNCTIONS   ****************/
 void init()
@@ -156,10 +161,12 @@ void init()
 	// --------------------- INIT CUBEMAP ---------------------
 	cubeMap = new CubeMap(cubeMapShader);
 	
-
 	// --------------------- INIT CAMERA ---------------------
 	// Initialise a third-person camera to follow a Box object
 	camera = Camera(&car, Type::THIRD);
+
+	// -------------- INIT SIMULATION STATE ------------------
+	STATE = SimulationState::RUNNING;
 }
 
 void toggleLighting(int i)
@@ -198,8 +205,6 @@ void handleLighting()
 	glUniform4fv(glGetUniformLocation(myShader->handle(), "material_diffuse"), 1, Material_Diffuse);
 	glUniform4fv(glGetUniformLocation(myShader->handle(), "material_specular"), 1, Material_Specular);
 	glUniform1f(glGetUniformLocation(myShader->handle(), "material_shininess"), Material_Shininess);
-
-	//glUniform4fv(glGetUniformLocation(cubeMapShader->handle(), "Brightness"), 1, Light_Ambient_And_Diffuse);
 }
 
 void display()									
@@ -240,16 +245,27 @@ void display()
 	glUniformMatrix4fv(glGetUniformLocation(myBasicShader->handle(), "ModelViewMatrix"), 1, GL_FALSE, &ModelViewMatrix[0][0]);
 	glUseProgram(myShader->handle());  // use the shader
 
-	// Model (local) Transformations on primary GameObject (Car)
-	ModelViewMatrix = glm::translate(viewingMatrix, glm::vec3(carPosition));
-	ModelViewMatrix = glm::rotate(ModelViewMatrix, car.getDirection(), glm::vec3(0.0f, 1.0f, 0.0f));
-	if (drawBoundingSpheres) {
-		// Draw Car's Bounding Sphere
-		glUniformMatrix3fv(glGetUniformLocation(myShader->handle(), "NormalMatrix"), 1, GL_FALSE, &normalMatrix[0][0]);
-		glUniformMatrix4fv(glGetUniformLocation(myShader->handle(), "ModelViewMatrix"), 1, GL_FALSE, &ModelViewMatrix[0][0]);
-		car.drawGeometry();
+	// If car is out of map bounds, fall
+	if (car.isOutOfBounds()) {
+		// Model (local) Transformations on primary GameObject (Car)
+		ModelViewMatrix = glm::translate(viewingMatrix, glm::vec3(carPosition));
+		ModelViewMatrix = glm::rotate(ModelViewMatrix, car.getDirection(), glm::vec3(0.0f, 1.0f, 0.0f));
+		ModelViewMatrix = glm::rotate(ModelViewMatrix, fallAngle, glm::vec3(1.0f, 0.0f, 0.0f));
+		ModelViewMatrix = glm::translate(ModelViewMatrix, glm::vec3(0.0f, 0.0f, -6.0f));
 	}
-	ModelViewMatrix = glm::translate(ModelViewMatrix, glm::vec3(0.0f, 0.0f, -6.0f));
+	else
+	{
+		// Model (local) Transformations on primary GameObject (Car)
+		ModelViewMatrix = glm::translate(viewingMatrix, glm::vec3(carPosition));
+		ModelViewMatrix = glm::rotate(ModelViewMatrix, car.getDirection(), glm::vec3(0.0f, 1.0f, 0.0f));
+		if (drawBoundingSpheres) {
+			// Draw Car's Bounding Sphere
+			glUniformMatrix3fv(glGetUniformLocation(myShader->handle(), "NormalMatrix"), 1, GL_FALSE, &normalMatrix[0][0]);
+			glUniformMatrix4fv(glGetUniformLocation(myShader->handle(), "ModelViewMatrix"), 1, GL_FALSE, &ModelViewMatrix[0][0]);
+			car.drawGeometry();
+		}
+		ModelViewMatrix = glm::translate(ModelViewMatrix, glm::vec3(0.0f, 0.0f, -6.0f));
+	}
 
 	// ModelView (global) transformations on primary GameObject (Car)
 	ModelViewMatrix = glm::translate(ModelViewMatrix, glm::vec3(0.0f, -3.5f, 0.0f));
@@ -333,42 +349,46 @@ void reshape(int width, int height)		// Resize the OpenGL window
 }
 void processKeys()
 {
-	if (keys['W'])
+	if (STATE == SimulationState::RUNNING) 
 	{
-		car.setSpeed(car.getSpeed() + 60.0f*deltaTime);
-		if (car.getSpeed() > 200.0f)
-			car.setSpeed(200.0f);
-	} 
-	else if (keys['S'])
-	{
-		car.setSpeed(car.getSpeed() - 60.0f*deltaTime);
-		if (car.getSpeed() < -200.0f)
-			car.setSpeed(-200.0f);
-	}
-	else
-	{
-		if (car.getSpeed() < 0.0f) {
-			car.setSpeed(car.getSpeed() + 50.0f*deltaTime);
-			if (car.getSpeed() >= 0) {
-				car.setSpeed(0.0f);
+		if (keys['W'])
+		{
+			car.setSpeed(car.getSpeed() + 60.0f*deltaTime);
+			if (car.getSpeed() > 200.0f)
+				car.setSpeed(200.0f);
+		}
+		else if (keys['S'])
+		{
+			car.setSpeed(car.getSpeed() - 60.0f*deltaTime);
+			if (car.getSpeed() < -200.0f)
+				car.setSpeed(-200.0f);
+		}
+		else
+		{
+			if (car.getSpeed() < 0.0f) {
+				car.setSpeed(car.getSpeed() + 50.0f*deltaTime);
+				if (car.getSpeed() >= 0) {
+					car.setSpeed(0.0f);
+				}
+			}
+			else {
+				car.setSpeed(car.getSpeed() - 50.0f*deltaTime);
+				if (car.getSpeed() <= 0) {
+					car.setSpeed(0.0f);
+				}
 			}
 		}
-		else {
-			car.setSpeed(car.getSpeed() - 50.0f*deltaTime);
-			if (car.getSpeed() <= 0) {
-				car.setSpeed(0.0f);
-			}
-		}
-	}
 
-	if (keys['A'])
-	{
-		car.turn(1);
+		if (keys['A'])
+		{
+			car.turn(1);
+		}
+		if (keys['D'])
+		{
+			car.turn(-1);
+		}
 	}
-	if (keys['D'])
-	{
-		car.turn(-1);
-	}
+	
 
 	if (keys['1'])
 	{
@@ -429,7 +449,7 @@ void handleCollisions()
 		Octree* oct = m->getOctree();
 		bool collision = CollisionTest::sphereAABB(car.getBoundingSphere(), oct->getMin(), oct->getMax());
 		if (collision) {
-			car.respondToCollision();
+			car.respondToCollision(deltaTime);
 			cout << "Collision!" << endl;
 			cout << "Sphere's centre = " << "(" << car.getBoundingSphere().getCentre().x << ", " << car.getBoundingSphere().getCentre().y << ", " << car.getBoundingSphere().getCentre().z << ")" << endl;
 			cout << "Sphere's radius = " << car.getBoundingSphere().getRadius() << endl;
@@ -437,6 +457,23 @@ void handleCollisions()
 			cout << "Octree's max = " << "(" << oct->getMax().x << ", " << oct->getMax().y << ", " << oct->getMax().z << ")" << endl;
 		}
 	}
+
+	// Check if the sphere is OOB (Out of Bounds)
+	bool collision = CollisionTest::sphereOOB(car.getBoundingSphere(), mapMinX, mapMinZ, mapMaxX, mapMaxZ);
+	if (collision) {
+		STATE = SimulationState::ENDED;
+		car.setOutOfBounds();
+		handleOOB();
+	}
+}
+
+void handleOOB()
+{
+	if (car.getSpeed() > 0.0f)
+		fallAngle += 0.5f;
+	else
+		fallAngle -= 0.5f;
+	car.setPosition(car.getPosition() + glm::vec3(0.0f, -1.0f, 0.0f));
 }
 
 void update(double deltaTime)
@@ -444,6 +481,8 @@ void update(double deltaTime)
 	car.move(deltaTime);
 	camera.update();
 	handleCollisions();
+	if (car.isBusted())
+		STATE = SimulationState::ENDED;
 }
 /**************** END OPENGL FUNCTIONS *************************/
 

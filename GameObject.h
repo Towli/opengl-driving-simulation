@@ -20,6 +20,8 @@ private:
 	float deltaTurnSpeed;
 	float speed;
 	Sphere boundingSphere;
+	bool outOfBounds;
+	bool busted;
 
 public:
 	GameObject(Shader* shader, ThreeDModel* model);
@@ -46,7 +48,10 @@ public:
 	float getSpeed();
 
 	/* Collision */
-	void respondToCollision();
+	void respondToCollision(double deltaTime);
+	bool isOutOfBounds();
+	void setOutOfBounds();
+	bool isBusted();
 
 	/* 3D Structures */
 	Sphere getBoundingSphere();

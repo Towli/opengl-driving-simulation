@@ -19,6 +19,11 @@ public:
 		return x * x;
 	}
 
+	static bool sphereOOB(Sphere sphere, float minx, float minz, float maxx, float maxz) {
+		glm::vec3 centre = sphere.getCentre();
+		return ((centre.x < minx) || (centre.x > maxx) || (centre.z < minz) || (centre.z > maxz));
+	}
+
 	static bool sphereAABB(Sphere sphere, glm::vec3 min, glm::vec3 max) {
 
 		float dist_squared = square(sphere.getRadius());
@@ -75,9 +80,6 @@ public:
 		// Square distance vector for positive values (explicitly for efficiency)
 		distance.x *= distance.x;
 		distance.y *= distance.y;
-
-		//cout << "distance.x = " << distance.x << endl;
-		//cout << "distance.y = " << distance.y << endl;
 
 		if (distance.x < 1 || distance.y < 1)
 			return true;

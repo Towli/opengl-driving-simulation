@@ -17,6 +17,8 @@ GameObject::GameObject(Shader* shader, ThreeDModel* model)
 	turnSpeed = 3.0f;
 	currentAngle = 0.0;
 	boundingSphere = Sphere(shader, position, 15.0f);
+	outOfBounds = false;
+	busted = false;
 }
 
 GameObject::GameObject(Shader* shader, vector<ThreeDModel*> models)
@@ -28,6 +30,8 @@ GameObject::GameObject(Shader* shader, vector<ThreeDModel*> models)
 	turnSpeed = 3.0f;
 	currentAngle = 0.0;
 	boundingSphere = Sphere(shader, position, 15.0f);
+	outOfBounds = false;
+	busted = false;
 }
 
 void GameObject::update()
@@ -41,15 +45,37 @@ void GameObject::drawGeometry()
 	boundingSphere.render();
 }
 
-void GameObject::respondToCollision()
+void GameObject::setOutOfBounds()
+{
+	this->outOfBounds = true;
+}
+
+bool GameObject::isOutOfBounds()
+{
+	return this->outOfBounds;
+}
+
+bool GameObject::isBusted()
+{
+	return this->busted;
+}
+
+void GameObject::respondToCollision(double deltaTime)
 {
 	// Move in opposite direction for short period of time, tapering off
-	this->setSpeed(-getSpeed());
+	if (speed < 50.0f*deltaTime)
+		this->speed = -speed;
+	else
+	{
+		busted = true;
+		this->speed = -speed*0.2f;
+	}
 }
 
 void GameObject::move(double deltaTime)
 {
-	this->deltaTurnSpeed = (speed*0.3*deltaTime) * turnSpeed * deltaTime;
+	//this->deltaTurnSpeed = (speed*0.3*deltaTime) * (turnSpeed * deltaTime);
+	this->deltaTurnSpeed = (speed * 0.4) * (turnSpeed * deltaTime);
 	position.x += glm::sin(glm::radians((getDirection()))) * speed * deltaTime;
 	position.z += glm::cos(glm::radians((getDirection()))) * speed * deltaTime;
 	update();
