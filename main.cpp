@@ -439,8 +439,8 @@ void calculateDeltaTime()
 	currentTime = clock();
 	deltaTime = (currentTime - previousTime);
 	deltaTime = deltaTime / (double)CLOCKS_PER_SEC;	
-	
 	update(deltaTime);
+	std::cout << "speed: " << car.getSpeed() << std::endl;
 }
 
 void handleCollisions()
@@ -450,11 +450,6 @@ void handleCollisions()
 		bool collision = CollisionTest::sphereAABB(car.getBoundingSphere(), oct->getMin(), oct->getMax());
 		if (collision) {
 			car.respondToCollision(deltaTime);
-			cout << "Collision!" << endl;
-			cout << "Sphere's centre = " << "(" << car.getBoundingSphere().getCentre().x << ", " << car.getBoundingSphere().getCentre().y << ", " << car.getBoundingSphere().getCentre().z << ")" << endl;
-			cout << "Sphere's radius = " << car.getBoundingSphere().getRadius() << endl;
-			cout << "Octree's min = " << "(" << oct->getMin().x << ", " << oct->getMin().y << ", " << oct->getMin().z << ")" << endl;
-			cout << "Octree's max = " << "(" << oct->getMax().x << ", " << oct->getMax().y << ", " << oct->getMax().z << ")" << endl;
 		}
 	}
 

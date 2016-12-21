@@ -63,19 +63,18 @@ bool GameObject::isBusted()
 void GameObject::respondToCollision(double deltaTime)
 {
 	// Move in opposite direction for short period of time, tapering off
-	if (speed < 50.0f*deltaTime)
+	if (speed < 200.0f && speed != 0)
 		this->speed = -speed;
-	else
-	{
+	else 
+	if (speed >= 200.0f) {
 		busted = true;
-		this->speed = -speed*0.2f;
+		this->speed = 0.0f;
 	}
 }
 
 void GameObject::move(double deltaTime)
 {
-	//this->deltaTurnSpeed = (speed*0.3*deltaTime) * (turnSpeed * deltaTime);
-	this->deltaTurnSpeed = (speed * 0.4) * (turnSpeed * deltaTime);
+	this->deltaTurnSpeed = (speed*0.3*deltaTime) * (turnSpeed * deltaTime);
 	position.x += glm::sin(glm::radians((getDirection()))) * speed * deltaTime;
 	position.z += glm::cos(glm::radians((getDirection()))) * speed * deltaTime;
 	update();
