@@ -53,8 +53,8 @@ float Material_Shininess = 50;
 
 //LIGHT PROPERTIES
 float Light_Ambient_And_Diffuse[4] = {0.8f, 0.8f, 0.9f, 1.0f};
-float Light_Specular[4] = {1.0f,1.0f,1.0f,1.0f};
-float LightPos[4] = {0.0f, 15.0f, 0.0f, 0.0f};
+float Light_Specular[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+float LightPos[4] = {0.0f, 1.0f, 0.0f, 0.0f};
 
 // MISC INPUT VARIABLES
 int	mouse_x=0, mouse_y=0;
@@ -72,6 +72,8 @@ double deltaTime = 0.0;
 // GLOBAL BOOLEANS
 bool drawBoundingSpheres = false;
 bool drawBoundingBoxes = false;
+bool dayLighting = true;
+bool nightLighting = false;
 
 //OPENGL FUNCTION PROTOTYPES
 void display();				//called in winmain to draw everything to the screen
@@ -79,6 +81,8 @@ void reshape(int width, int height);				//called when the window is resized
 void init();				//called in winmain when the program starts.
 void processKeys();         //called in winmain to process keyboard input
 void update(double deltaTime);				//called in winmain to update variables
+void handleLighting();
+void toggleLighting();
 void calculateDeltaTime();
 ThreeDModel* loadModel(char* filePath, Shader* shader);
 void handleCollisions();
@@ -148,6 +152,40 @@ void init()
 	camera = Camera(&car, Type::THIRD);
 }
 
+void toggleLighting()
+{
+	if (dayLighting)
+	{
+		dayLighting = false;
+		nightLighting = true;
+		Light_Ambient_And_Diffuse[0] = { 0.1f };
+		Light_Ambient_And_Diffuse[1] = { 0.1f };
+		Light_Ambient_And_Diffuse[2] = { 0.1f };
+		Light_Ambient_And_Diffuse[3] = { 1.0f };
+	}
+	else {
+		dayLighting = true;
+		nightLighting = false;
+		Light_Ambient_And_Diffuse[0] = { 0.8f };
+		Light_Ambient_And_Diffuse[1] = { 0.8f };
+		Light_Ambient_And_Diffuse[2] = { 0.8f };
+		Light_Ambient_And_Diffuse[3] = { 1.0f };
+	}
+
+}
+void handleLighting()
+{
+	glUniform4fv(glGetUniformLocation(myShader->handle(), "LightPos"), 1, LightPos);
+	glUniform4fv(glGetUniformLocation(myShader->handle(), "light_ambient"), 1, Light_Ambient_And_Diffuse);
+	glUniform4fv(glGetUniformLocation(myShader->handle(), "light_diffuse"), 1, Light_Ambient_And_Diffuse);
+	glUniform4fv(glGetUniformLocation(myShader->handle(), "light_specular"), 1, Light_Specular);
+
+	glUniform4fv(glGetUniformLocation(myShader->handle(), "material_ambient"), 1, Material_Ambient);
+	glUniform4fv(glGetUniformLocation(myShader->handle(), "material_diffuse"), 1, Material_Diffuse);
+	glUniform4fv(glGetUniformLocation(myShader->handle(), "material_specular"), 1, Material_Specular);
+	glUniform1f(glGetUniformLocation(myShader->handle(), "material_shininess"), Material_Shininess);
+}
+
 void display()									
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -164,15 +202,7 @@ void display()
 	viewingMatrix = camera.getViewingMatrix();
 	glUniformMatrix4fv(glGetUniformLocation(myShader->handle(), "ViewMatrix"), 1, GL_FALSE, &viewingMatrix[0][0]);
 
-	glUniform4fv(glGetUniformLocation(myShader->handle(), "LightPos"), 1, LightPos);
-	glUniform4fv(glGetUniformLocation(myShader->handle(), "light_ambient"), 1, Light_Ambient_And_Diffuse);
-	glUniform4fv(glGetUniformLocation(myShader->handle(), "light_diffuse"), 1, Light_Ambient_And_Diffuse);
-	glUniform4fv(glGetUniformLocation(myShader->handle(), "light_specular"), 1, Light_Specular);
-
-	glUniform4fv(glGetUniformLocation(myShader->handle(), "material_ambient"), 1, Material_Ambient);
-	glUniform4fv(glGetUniformLocation(myShader->handle(), "material_diffuse"), 1, Material_Diffuse);
-	glUniform4fv(glGetUniformLocation(myShader->handle(), "material_specular"), 1, Material_Specular);
-	glUniform1f(glGetUniformLocation(myShader->handle(), "material_shininess"), Material_Shininess);
+	handleLighting();
 
 	//DRAW THE CUBEMAP
 	ModelViewMatrix = glm::translate(viewingMatrix, glm::vec3(0.0f, 100.0f, 0.0f));
@@ -183,18 +213,14 @@ void display()
 	glUniformMatrix4fv(glGetUniformLocation(cubeMapShader->handle(), "ViewMatrix"), 1, GL_FALSE, &ModelViewMatrix[0][0]);
 	cubeMap->render();
 
-	//DRAW THE MODEL
+	//DRAW THE CAR
 	ModelViewMatrix = viewingMatrix;
-	
 	glUniformMatrix4fv(glGetUniformLocation(myShader->handle(), "ModelViewMatrix"), 1, GL_FALSE, &ModelViewMatrix[0][0]);
-
 	glm::mat3 normalMatrix = glm::inverseTranspose(glm::mat3(ModelViewMatrix));
 	glUniformMatrix3fv(glGetUniformLocation(myShader->handle(), "NormalMatrix"), 1, GL_FALSE, &normalMatrix[0][0]);
-	
 	glUseProgram(myBasicShader->handle());  // use the shader
 	glUniformMatrix4fv(glGetUniformLocation(myBasicShader->handle(), "ProjectionMatrix"), 1, GL_FALSE, &ProjectionMatrix[0][0]);
 	glUniformMatrix4fv(glGetUniformLocation(myBasicShader->handle(), "ModelViewMatrix"), 1, GL_FALSE, &ModelViewMatrix[0][0]);
-	
 	glUseProgram(myShader->handle());  // use the shader
 
 	// Model (local) Transformations on primary GameObject (Car)
@@ -214,14 +240,13 @@ void display()
 
 	normalMatrix = glm::inverseTranspose(glm::mat3(ModelViewMatrix));
 	glUniformMatrix3fv(glGetUniformLocation(myShader->handle(), "NormalMatrix"), 1, GL_FALSE, &normalMatrix[0][0]);
-
-	//Pass the uniform for the modelview matrix - in this case just "r"
 	glUniformMatrix4fv(glGetUniformLocation(myShader->handle(), "ModelViewMatrix"), 1, GL_FALSE, &ModelViewMatrix[0][0]);
 
 	for each(ThreeDModel* m in car.getModels()) {
 		m->drawElementsUsingVBO(myShader);
 	}
 
+	// DRAW THE GROUND
 	ModelViewMatrix = glm::translate(viewingMatrix, glm::vec3(0.0, -2.0, 0.0));
 	ModelViewMatrix = glm::rotate(ModelViewMatrix, 180.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 	normalMatrix = glm::inverseTranspose(glm::mat3(ModelViewMatrix));
@@ -354,6 +379,11 @@ void processKeys()
 	{
 		drawBoundingBoxes = false;
 		drawBoundingSpheres = false;
+	}
+
+	if (keys['L'])
+	{
+		toggleLighting();
 	}
 }
 
