@@ -162,24 +162,28 @@ void init()
 	camera = Camera(&car, Type::THIRD);
 }
 
-void toggleLighting()
+void toggleLighting(int i)
 {
-	if (dayLighting)
+	if (i == 1)
 	{
-		dayLighting = false;
-		nightLighting = true;
-		Light_Ambient_And_Diffuse[0] = { 0.1f };
-		Light_Ambient_And_Diffuse[1] = { 0.1f };
-		Light_Ambient_And_Diffuse[2] = { 0.1f };
+		Light_Ambient_And_Diffuse[0] = { 0.2f };
+		Light_Ambient_And_Diffuse[1] = { 0.2f };
+		Light_Ambient_And_Diffuse[2] = { 0.2f };
 		Light_Ambient_And_Diffuse[3] = { 1.0f };
+		LightPos[0] = { 0.0f };
+		LightPos[1] = { 0.0f };
+		LightPos[2] = { 0.0f };
+		LightPos[3] = { 0.0f };
 	}
 	else {
-		dayLighting = true;
-		nightLighting = false;
 		Light_Ambient_And_Diffuse[0] = { 0.8f };
 		Light_Ambient_And_Diffuse[1] = { 0.8f };
-		Light_Ambient_And_Diffuse[2] = { 0.8f };
+		Light_Ambient_And_Diffuse[2] = { 0.9f };
 		Light_Ambient_And_Diffuse[3] = { 1.0f };
+		LightPos[0] = { 0.0f };
+		LightPos[1] = { 1.0f };
+		LightPos[2] = { 0.0f };
+		LightPos[3] = { 0.0f };
 	}
 
 }
@@ -194,6 +198,8 @@ void handleLighting()
 	glUniform4fv(glGetUniformLocation(myShader->handle(), "material_diffuse"), 1, Material_Diffuse);
 	glUniform4fv(glGetUniformLocation(myShader->handle(), "material_specular"), 1, Material_Specular);
 	glUniform1f(glGetUniformLocation(myShader->handle(), "material_shininess"), Material_Shininess);
+
+	//glUniform4fv(glGetUniformLocation(cubeMapShader->handle(), "Brightness"), 1, Light_Ambient_And_Diffuse);
 }
 
 void display()									
@@ -221,6 +227,7 @@ void display()
 	glUseProgram(cubeMapShader->handle());
 	glUniformMatrix4fv(glGetUniformLocation(cubeMapShader->handle(), "ProjectionMatrix"), 1, GL_FALSE, &ProjectionMatrix[0][0]);
 	glUniformMatrix4fv(glGetUniformLocation(cubeMapShader->handle(), "ViewMatrix"), 1, GL_FALSE, &ModelViewMatrix[0][0]);
+	glUniform4fv(glGetUniformLocation(cubeMapShader->handle(), "Brightness"), 1, Light_Ambient_And_Diffuse);
 	cubeMap->render();
 
 	//DRAW THE CAR
@@ -395,9 +402,14 @@ void processKeys()
 		drawBoundingSpheres = false;
 	}
 
-	if (keys['L'])
+	if (keys['7'])
 	{
-		toggleLighting();
+		toggleLighting(1);
+	}
+	
+	if (keys['8'])
+	{
+		toggleLighting(0);
 	}
 }
 
