@@ -363,15 +363,15 @@ void processKeys()
 	{
 		if (keys['W'])
 		{
-			car.setSpeed(car.getSpeed() + 75.0f*deltaTime);
-			if (car.getSpeed() > 250.0f)
-				car.setSpeed(250.0f);
+			car.setSpeed(car.getSpeed() + 70.0f*deltaTime);
+			if (car.getSpeed() > 210.0f)
+				car.setSpeed(210.0f);
 		}
 		else if (keys['S'])
 		{
-			car.setSpeed(car.getSpeed() - 75.0f*deltaTime);
-			if (car.getSpeed() < -250.0f)
-				car.setSpeed(-250.0f);
+			car.setSpeed(car.getSpeed() - 70.0f*deltaTime);
+			if (car.getSpeed() < -210.0f)
+				car.setSpeed(-210.0f);
 		}
 		else
 		{
@@ -399,7 +399,7 @@ void processKeys()
 		}
 		if (keys[' '])
 		{
-			car.setSpeed(car.getSpeed() * 0.95f);
+			car.setSpeed(car.getSpeed() * 0.90f);
 		}
 	}
 	
@@ -459,6 +459,7 @@ void calculateDeltaTime()
 	deltaTime = (currentTime - previousTime);
 	deltaTime = deltaTime / (double)CLOCKS_PER_SEC;	
 	update(deltaTime);
+	std::cout << "speed: " << car.getSpeed() << std::endl;
 }
 
 void handleCollisions()

@@ -79,7 +79,7 @@ void GameObject::respondToCollision(double deltaTime)
 
 void GameObject::move(double deltaTime)
 {
-	double tmp = (speed*deltaTime) * 60 / 100;
+	double tmp = (speed*deltaTime) * 30 / 100;
 	this->deltaTurnSpeed = tmp * (turnSpeed * deltaTime);
 	position.x += glm::sin(glm::radians((getDirection()))) * speed * deltaTime;
 	position.z += glm::cos(glm::radians((getDirection()))) * speed * deltaTime;
