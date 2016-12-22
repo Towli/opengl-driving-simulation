@@ -455,7 +455,6 @@ void calculateDeltaTime()
 	deltaTime = (currentTime - previousTime);
 	deltaTime = deltaTime / (double)CLOCKS_PER_SEC;	
 	update(deltaTime);
-	std::cout << "speed: " << car.getSpeed() << std::endl;
 }
 
 void handleCollisions()
