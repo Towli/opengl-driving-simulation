@@ -55,7 +55,7 @@ float Material_Shininess = 50;
 //LIGHT PROPERTIES
 float Light_Ambient_And_Diffuse[4] = {0.8f, 0.8f, 0.9f, 1.0f};
 float Light_Specular[4] = {1.0f, 1.0f, 1.0f, 1.0f};
-float LightPos[4] = {0.0f, 1.0f, 0.0f, 0.0f};
+float LightPos[4] = { 0.0f, 1.0f, 0.0f, 0.0f };
 
 // SIMULATION STATES
 enum class SimulationState { RUNNING = 1, ENDED = 2 };
@@ -209,6 +209,7 @@ void handleLighting()
 }
 void resetSimulation()
 {
+	car.setOutOfBounds(false);
 	fallAngle = 0.0f;
 	car.setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 	car.setSpeed(0.0f);
@@ -471,7 +472,7 @@ void handleCollisions()
 	bool collision = CollisionTest::sphereOOB(car.getBoundingSphere(), mapMinX, mapMinZ, mapMaxX, mapMaxZ);
 	if (collision) {
 		STATE = SimulationState::ENDED;
-		car.setOutOfBounds();
+		car.setOutOfBounds(true);
 		handleOOB();
 	}
 }

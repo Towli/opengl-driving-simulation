@@ -50,7 +50,7 @@ public:
 	/* Collision */
 	void respondToCollision(double deltaTime);
 	bool isOutOfBounds();
-	void setOutOfBounds();
+	void setOutOfBounds(bool b);
 	bool isBusted();
 	void setBusted(bool b);
 

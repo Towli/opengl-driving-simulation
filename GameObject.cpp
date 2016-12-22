@@ -16,7 +16,7 @@ GameObject::GameObject(Shader* shader, ThreeDModel* model)
 	speed = 0.0;
 	turnSpeed = 3.0f;
 	currentAngle = 0.0;
-	boundingSphere = Sphere(shader, position, 15.0f);
+	boundingSphere = Sphere(shader, position, 12.0f);
 	outOfBounds = false;
 	busted = false;
 }
@@ -29,7 +29,7 @@ GameObject::GameObject(Shader* shader, vector<ThreeDModel*> models)
 	speed = 0.0;
 	turnSpeed = 3.0f;
 	currentAngle = 0.0;
-	boundingSphere = Sphere(shader, position, 15.0f);
+	boundingSphere = Sphere(shader, position, 12.0f);
 	outOfBounds = false;
 	busted = false;
 }
@@ -45,9 +45,9 @@ void GameObject::drawGeometry()
 	boundingSphere.render();
 }
 
-void GameObject::setOutOfBounds()
+void GameObject::setOutOfBounds(bool b)
 {
-	this->outOfBounds = true;
+	this->outOfBounds = b;
 }
 
 bool GameObject::isOutOfBounds()
