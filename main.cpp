@@ -363,15 +363,15 @@ void processKeys()
 	{
 		if (keys['W'])
 		{
-			car.setSpeed(car.getSpeed() + 60.0f*deltaTime);
-			if (car.getSpeed() > 200.0f)
-				car.setSpeed(200.0f);
+			car.setSpeed(car.getSpeed() + 75.0f*deltaTime);
+			if (car.getSpeed() > 250.0f)
+				car.setSpeed(250.0f);
 		}
 		else if (keys['S'])
 		{
-			car.setSpeed(car.getSpeed() - 60.0f*deltaTime);
-			if (car.getSpeed() < -200.0f)
-				car.setSpeed(-200.0f);
+			car.setSpeed(car.getSpeed() - 75.0f*deltaTime);
+			if (car.getSpeed() < -250.0f)
+				car.setSpeed(-250.0f);
 		}
 		else
 		{
@@ -396,6 +396,10 @@ void processKeys()
 		if (keys['D'])
 		{
 			car.turn(-1);
+		}
+		if (keys[' '])
+		{
+			car.setSpeed(car.getSpeed() * 0.95f);
 		}
 	}
 	
