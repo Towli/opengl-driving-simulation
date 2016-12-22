@@ -92,6 +92,7 @@ void calculateDeltaTime();
 ThreeDModel* loadModel(char* filePath, Shader* shader);
 void handleCollisions();
 void handleOOB();
+void resetSimulation();
 
 /*************    START OF OPENGL FUNCTIONS   ****************/
 void init()
@@ -205,6 +206,14 @@ void handleLighting()
 	glUniform4fv(glGetUniformLocation(myShader->handle(), "material_diffuse"), 1, Material_Diffuse);
 	glUniform4fv(glGetUniformLocation(myShader->handle(), "material_specular"), 1, Material_Specular);
 	glUniform1f(glGetUniformLocation(myShader->handle(), "material_shininess"), Material_Shininess);
+}
+void resetSimulation()
+{
+	fallAngle = 0.0f;
+	car.setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+	car.setSpeed(0.0f);
+	car.setBusted(false);
+	STATE = SimulationState::RUNNING;
 }
 
 void display()									
@@ -430,6 +439,11 @@ void processKeys()
 	if (keys['8'])
 	{
 		toggleLighting(0);
+	}
+
+	if (keys['R'])
+	{
+		resetSimulation();
 	}
 }
 

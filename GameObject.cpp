@@ -60,6 +60,11 @@ bool GameObject::isBusted()
 	return this->busted;
 }
 
+void GameObject::setBusted(bool b)
+{
+	this->busted = b;
+}
+
 void GameObject::respondToCollision(double deltaTime)
 {
 	// Move in opposite direction for short period of time, tapering off

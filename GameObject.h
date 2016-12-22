@@ -52,6 +52,7 @@ public:
 	bool isOutOfBounds();
 	void setOutOfBounds();
 	bool isBusted();
+	void setBusted(bool b);
 
 	/* 3D Structures */
 	Sphere getBoundingSphere();
