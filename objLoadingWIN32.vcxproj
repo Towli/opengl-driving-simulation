@@ -25,7 +25,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -94,9 +94,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CollisionTest.cpp" />
     <ClCompile Include="console.cpp" />
-    <ClCompile Include="Box.cpp" />
+    <ClCompile Include="CubeMap.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="Geometry\Box.cpp" />
+    <ClCompile Include="Geometry\Sphere.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="3dStruct\BoundingBox.cpp" />
     <ClCompile Include="3dStruct\threeDModel.cpp" />
@@ -111,11 +114,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="CollisionTest.h" />
     <ClInclude Include="console.h" />
     <ClInclude Include="3dStruct\BoundingBox.h" />
     <ClInclude Include="3dStruct\threeDModel.h" />
-    <ClInclude Include="Box.h" />
+    <ClInclude Include="CubeMap.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="Geometry\Box.h" />
+    <ClInclude Include="Geometry\Sphere.h" />
     <ClInclude Include="Images\imageloader.h" />
     <ClInclude Include="Images\nvImage.h" />
     <ClInclude Include="Obj\OBJLoader.h" />
